@@ -36,6 +36,16 @@ const GAMES = [
     description: 'Match real countries to solve ridiculous international crises. All 193 UN member states. Learn the world — one oddball crisis at a time.',
     tags: ['strategy', 'geography', 'educational'],
   },
+  {
+    id: 'gravity-lab',
+    title: 'Gravity Lab',
+    subtitle: 'bend gravity, guide the comet!',
+    emoji: '🌌',
+    path: '/gravity-lab',
+    colors: ['#7c3aed', '#06b6d4'],
+    description: "Place planets to bend a comet's path with gravity. Solve 8 space puzzles and learn how gravity works!",
+    tags: ['strategy', 'science', 'puzzle'],
+  },
   // {
   //   id: 'your-next-game',
   //   title: 'Your Next Game',
