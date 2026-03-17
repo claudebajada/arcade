@@ -289,6 +289,9 @@ Requirements:
 - No external CSS, no image imports, no TypeScript
 - Three screens: start/menu → gameplay → game-over/results
 - Clean up event listeners and animation frames in useEffect returns
+- The games should be unique (also ensure that we are not using any content from others, no copyright violations)
+- The gaves should strive to be slightly quirky
+- We strive to teach kids something in every game but the teaching should be deeply integrated into the game
 - Content must be appropriate for children
 
 Theme/concept: [describe the game idea]
