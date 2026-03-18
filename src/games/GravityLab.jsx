@@ -7,11 +7,11 @@ const CANVAS_W = 800;
 const CANVAS_H = 600;
 const DT = 1 / 60;
 const TRAJ_STEPS = 600;
-const G_CONSTANT = 900;
+const G_CONSTANT = 3500;
 const COMET_RADIUS = 10;
 const PORTAL_RADIUS = 24;
 const HAZARD_RADIUS = 18;
-const MAX_SPEED = 14;
+const MAX_SPEED = 800;
 
 const PLANET_TYPES = [
   { id: 'small',  label: 'Small',  mass: 1.5, radius: 14, color: '#a78bfa', glowColor: '#7c3aed', emoji: '🔵' },
