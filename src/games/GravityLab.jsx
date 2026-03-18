@@ -5,13 +5,12 @@ import { useNavigate } from 'react-router-dom';
 
 const CANVAS_W = 800;
 const CANVAS_H = 600;
-const DT = 1 / 60;
 const TRAJ_STEPS = 600;
-const G_CONSTANT = 3500;
+const G_CONSTANT = 300;
 const COMET_RADIUS = 10;
 const PORTAL_RADIUS = 24;
 const HAZARD_RADIUS = 18;
-const MAX_SPEED = 800;
+const MAX_SPEED = 18;
 
 const PLANET_TYPES = [
   { id: 'small',  label: 'Small',  mass: 1.5, radius: 14, color: '#a78bfa', glowColor: '#7c3aed', emoji: '🔵' },
@@ -36,11 +35,12 @@ const LEVELS = [
   {
     title: 'Baby Steps',
     comet: { x: 80, y: 300, vx: 3.5, vy: 0 },
-    portal: { x: 720, y: 300 },
+    portal: { x: 700, y: 190 },
     fixedPlanets: [],
     hazards: [],
-    planetBudget: { small: 1, medium: 0, large: 0 },
-    hint: '☝️ Place a small planet near the comet\'s path to nudge it into the portal!',
+    planetBudget: { small: 0, medium: 1, large: 0 },
+    hint: '👆 Place the green planet BELOW the dotted line to pull the comet upward!',
+    tutorialGuide: { x: 350, y: 380 },
   },
   {
     title: 'Upward Curve',
@@ -73,7 +73,7 @@ const LEVELS = [
   },
   {
     title: 'The Needle',
-    comet: { x: 80, y: 200, vx: 2.5, vy: 1.2 },
+    comet: { x: 80, y: 200, vx: 3.0, vy: 1.4 },
     portal: { x: 680, y: 430 },
     fixedPlanets: [],
     hazards: [{ x: 380, y: 270 }, { x: 380, y: 390 }],
@@ -82,7 +82,7 @@ const LEVELS = [
   },
   {
     title: 'Double Pull',
-    comet: { x: 80, y: 100, vx: 2.2, vy: 1.6 },
+    comet: { x: 80, y: 100, vx: 2.8, vy: 1.8 },
     portal: { x: 720, y: 510 },
     fixedPlanets: [],
     hazards: [{ x: 240, y: 360 }, { x: 560, y: 210 }],
@@ -103,7 +103,7 @@ const LEVELS = [
   },
   {
     title: 'Grand Finale',
-    comet: { x: 80, y: 310, vx: 1.8, vy: 2.2 },
+    comet: { x: 80, y: 310, vx: 2.6, vy: 2.6 },
     portal: { x: 400, y: 75 },
     fixedPlanets: [
       { x: 250, y: 490, mass: 12, radius: 38, color: '#475569', glowColor: '#334155', fixed: true },
@@ -132,11 +132,11 @@ function computeAcceleration(cx, cy, planets) {
   return { ax, ay };
 }
 
-function eulerStep(x, y, vx, vy, planets, dt) {
+function eulerStep(x, y, vx, vy, planets) {
   const { ax, ay } = computeAcceleration(x, y, planets);
-  const nvx = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, vx + ax * dt));
-  const nvy = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, vy + ay * dt));
-  return { x: x + nvx * dt, y: y + nvy * dt, vx: nvx, vy: nvy };
+  const nvx = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, vx + ax));
+  const nvy = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, vy + ay));
+  return { x: x + nvx, y: y + nvy, vx: nvx, vy: nvy };
 }
 
 function circlesOverlap(ax, ay, ar, bx, by, br) {
@@ -151,7 +151,7 @@ function runSimulation(level, playerPlanets) {
   let outcome = 'timeout';
 
   for (let i = 0; i < TRAJ_STEPS; i++) {
-    const s = eulerStep(x, y, vx, vy, allPlanets, DT);
+    const s = eulerStep(x, y, vx, vy, allPlanets);
     x = s.x; y = s.y; vx = s.vx; vy = s.vy;
     points.push({ x, y });
 
@@ -682,6 +682,27 @@ export default function GravityLab() {
     ctx.textBaseline = 'middle';
     ctx.fillText(`Level ${g.levelIdx + 1}: ${level.title}`, CANVAS_W / 2, 28);
 
+    // Tutorial guide for Level 0
+    if (g.phase === 'placing' && level.tutorialGuide && g.playerPlanets.length === 0) {
+      const guide = level.tutorialGuide;
+      const pulse = 0.35 + 0.25 * Math.sin(g.time * 4);
+      ctx.save();
+      ctx.globalAlpha = pulse;
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath();
+      ctx.arc(guide.x, guide.y, 30, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = pulse * 0.6;
+      ctx.fillStyle = '#34d399';
+      ctx.font = "bold 12px 'Nunito', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.fillText('PLACE HERE', guide.x, guide.y + 48);
+      ctx.restore();
+    }
+
     // Hint text
     if (g.phase === 'placing') {
       ctx.fillStyle = 'rgba(3,5,26,0.5)';
@@ -728,7 +749,7 @@ export default function GravityLab() {
     if (g.phase === 'flying') {
       const level = LEVELS[g.levelIdx];
       const allPlanets = [...level.fixedPlanets, ...g.playerPlanets];
-      const s = eulerStep(g.comet.x, g.comet.y, g.comet.vx, g.comet.vy, allPlanets, DT);
+      const s = eulerStep(g.comet.x, g.comet.y, g.comet.vx, g.comet.vy, allPlanets);
       g.comet.x = s.x; g.comet.y = s.y;
       g.comet.vx = s.vx; g.comet.vy = s.vy;
 
