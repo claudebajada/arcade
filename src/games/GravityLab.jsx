@@ -732,7 +732,7 @@ export default function GravityLab() {
     const g = gameRef.current;
     if (!g) return;
 
-    const dt = lastTimeRef.current === null ? DT
+    const dt = lastTimeRef.current === null ? 1 / 60
       : Math.min((timestamp - lastTimeRef.current) / 1000, 1 / 30);
     lastTimeRef.current = timestamp;
 
