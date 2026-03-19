@@ -39,8 +39,8 @@ const LEVELS = [
     fixedPlanets: [],
     hazards: [],
     planetBudget: { small: 0, medium: 1, large: 0 },
-    hint: '👆 Place the green planet BELOW the dotted line to pull the comet upward!',
-    tutorialGuide: { x: 350, y: 380 },
+    hint: '👇 Place the green planet ABOVE the dotted line to bend the comet up toward the portal!',
+    tutorialGuide: { x: 480, y: 150 },
   },
   {
     title: 'Upward Curve',
