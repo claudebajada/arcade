@@ -1551,22 +1551,20 @@ export default function FishForFruit() {
           position: "absolute",
           top: 12,
           left: 16,
-          color: "#4a4a6a",
-          fontSize: 12,
-          letterSpacing: 2,
+          color: "#fff",
+          fontSize: 13,
           cursor: "pointer",
           zIndex: 10,
-          padding: "6px 12px",
-          borderRadius: 6,
-          background: "#0a0c2080",
-          border: "1px solid #1a1a3a",
-          transition: "all 0.2s",
-          fontFamily: "'Courier New', monospace",
+          padding: "8px 14px",
+          borderRadius: 20,
+          background: "rgba(0,0,0,0.4)",
+          border: "2px solid rgba(255,255,255,0.3)",
+          fontFamily: "'Nunito', 'Baloo 2', sans-serif",
+          fontWeight: 700,
+          userSelect: "none",
         }}
-        onMouseEnter={(e) => { e.target.style.color = "#00f5d4"; e.target.style.borderColor = "#00f5d440"; }}
-        onMouseLeave={(e) => { e.target.style.color = "#4a4a6a"; e.target.style.borderColor = "#1a1a3a"; }}
       >
-        ← ARCADE
+        ← ODD NOODLE
       </div>
       <div
         style={{
