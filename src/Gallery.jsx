@@ -45,7 +45,18 @@ const GAMES = [
     colors: ['#7c3aed', '#06b6d4'],
     description: "Place planets to bend a comet's path with gravity. Solve 8 space puzzles and learn how gravity works!",
     tags: ['strategy', 'science', 'puzzle'],
+  },    
+  {
+    id: 'debug-dynasty',
+    title: 'Debug Dynasty',
+    subtitle: 'squash bugs and rule the code',
+    emoji: '🐛',
+    path: '/debug-dynasty',
+    colors: ['#ef4444', '#f97316'], 
+    description: 'Find the glitches in the system and become the ultimate ruler of the Debug Dynasty!',
+    tags: ['arcade', 'coding'],
   },
+  
   // {
   //   id: 'your-next-game',
   //   title: 'Your Next Game',

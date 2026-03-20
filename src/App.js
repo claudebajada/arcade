@@ -5,6 +5,7 @@ import FishForFruit from './games/FishForFruit';
 import NumberNomad from './games/NumberNomad';
 import EmbassyOfOddballs from './games/EmbassyOfOddballs';
 import GravityLab from './games/GravityLab';
+import DebugDynasty from './games/DebugDynasty';
 
 /*
   ============================================================
@@ -27,6 +28,7 @@ export default function App() {
       <Route path="/embassy-of-oddballs" element={<EmbassyOfOddballs />} />
       <Route path="/gravity-lab" element={<GravityLab />} />
       {/* Add new game routes here */}
-    </Routes>
+            <Route path="/debug-dynasty" element={<DebugDynasty />} />
+</Routes>
   );
 }

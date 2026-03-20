@@ -58,9 +58,20 @@ const galleryPath = path.join(__dirname, '../src/Gallery.jsx');
 let galleryCode = fs.readFileSync(galleryPath, 'utf8');
 
 if (!galleryCode.includes(`id: '${slug}'`)) {
-    // Find the games array and insert the new game
-    const newGameObject = `  { id: '${slug}', title: '${title}', path: '/${slug}', icon: '${icon}', color: '${colorClass}' },\n`;
-    galleryCode = galleryCode.replace('const games = [', `const games = [\n${newGameObject}`);
+    // Generate the correct object structure for your gallery
+    const newGameObject = `  {
+    id: '${slug}',
+    title: '${title}',
+    subtitle: 'a new adventure awaits',
+    emoji: '${icon}',
+    path: '/${slug}',
+    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
+    description: 'A brand new game added to the arcade!',
+    tags: ['new', 'arcade'],
+  },\n`;
+    
+    // Look for the uppercase GAMES array
+    galleryCode = galleryCode.replace('const GAMES = [', `const GAMES = [\n${newGameObject}`);
     
     fs.writeFileSync(galleryPath, galleryCode);
     console.log(`✅ Added ${title} to Gallery.jsx`);
