@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
   Add new games to this array.
   Each entry becomes a card on the gallery page.
 */
-const GAMES = [
+export const GAMES = [
   {
     id: 'relativistic-racer_arcade',
     title: 'Relativistic Racer',
