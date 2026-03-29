@@ -29,10 +29,10 @@ export default function App() {
       <Route path="/number-nomad" element={<NumberNomad />} />
       <Route path="/embassy-of-oddballs" element={<EmbassyOfOddballs />} />
       <Route path="/gravity-lab" element={<GravityLab />} />
+      <Route path="/debug-dynasty" element={<DebugDynasty />} />
+      <Route path="/math-practice-room" element={<MathPracticeRoom />} />
+      <Route path="/relativistic-racer_arcade" element={<RelativisticRacer_Arcade />} />
       {/* Add new game routes here */}
-            <Route path="/debug-dynasty" element={<DebugDynasty />} />
-        <Route path="/math-practice-room" element={<MathPracticeRoom />} />
-        <Route path="/relativistic-racer_arcade" element={<RelativisticRacer_Arcade />} />
-</Routes>
+    </Routes>
   );
 }

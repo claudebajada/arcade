@@ -9,23 +9,23 @@ const GAMES = [
   {
     id: 'relativistic-racer_arcade',
     title: 'Relativistic Racer',
-    subtitle: 'a new adventure awaits',
+    subtitle: 'race at the speed of light — sort of',
     emoji: '🚀',
     path: '/relativistic-racer_arcade',
-    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
-    description: 'A brand new game added to the arcade!',
-    tags: ['new', 'arcade'],
+    colors: ['#3b82f6', '#8b5cf6'],
+    description: "In this universe, light speed is only 100 mph. Race to rescue your stranded sister while dodging asteroids — but the faster you fly, the slower your clock ticks. Feel Einstein's special relativity for real!",
+    tags: ['arcade', 'science'],
   },
 
   {
     id: 'math-practice-room',
     title: 'Math Practice Room',
-    subtitle: 'a new adventure awaits',
+    subtitle: 'master numbers, one sum at a time',
     emoji: '🎯',
     path: '/math-practice-room',
-    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
-    description: 'A brand new game added to the arcade!',
-    tags: ['new', 'arcade'],
+    colors: ['#f59e0b', '#10b981'],
+    description: 'A cosy classroom for practising addition and subtraction. Pick your name, choose a category — doubles, friends of 10, bridging — and train your brain to answer fast!',
+    tags: ['educational', 'maths'],
   },
 
   {
@@ -215,9 +215,19 @@ export default function Gallery() {
     };
     animRef.current = requestAnimationFrame(loop);
 
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animRef.current);
+      } else {
+        animRef.current = requestAnimationFrame(loop);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
     return () => {
       cancelAnimationFrame(animRef.current);
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [darkMode]);
 
@@ -321,6 +331,8 @@ export default function Gallery() {
 
           <button
             onClick={() => setDarkMode(!dm)}
+            aria-label={dm ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={!dm}
             style={{
               width: 56, height: 28,
               borderRadius: 14,
@@ -556,9 +568,14 @@ export default function Gallery() {
             return (
               <div
                 key={game.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => navigate(game.path)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(game.path); } }}
                 onMouseEnter={() => setHovered(game.id)}
                 onMouseLeave={() => setHovered(null)}
+                onFocus={() => setHovered(game.id)}
+                onBlur={() => setHovered(null)}
                 style={{
                   position: 'relative',
                   background: cardBg,
@@ -671,8 +688,8 @@ export default function Gallery() {
             );
           })}
 
-          {/* Coming soon card */}
-          {GAMES.length < 4 && (
+          {/* Coming soon card — shown when game count is odd to fill the grid */}
+          {GAMES.length % 2 !== 0 && (
             <div style={{
               background: dm ? '#0a0c2040' : '#ffffff60',
               border: `2px dashed ${dm ? '#2a1a5e' : '#ddd6fe'}`,
