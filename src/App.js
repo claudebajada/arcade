@@ -7,6 +7,7 @@ import EmbassyOfOddballs from './games/EmbassyOfOddballs';
 import GravityLab from './games/GravityLab';
 import DebugDynasty from './games/DebugDynasty';
 import MathPracticeRoom from './games/MathPracticeRoom';
+import RelativisticRacer_Arcade from './games/RelativisticRacer_Arcade';
 
 /*
   ============================================================
@@ -31,6 +32,7 @@ export default function App() {
       {/* Add new game routes here */}
             <Route path="/debug-dynasty" element={<DebugDynasty />} />
         <Route path="/math-practice-room" element={<MathPracticeRoom />} />
+        <Route path="/relativistic-racer_arcade" element={<RelativisticRacer_Arcade />} />
 </Routes>
   );
 }
