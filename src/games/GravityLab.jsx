@@ -303,8 +303,9 @@ export default function GravityLab() {
     const rect = canvas.getBoundingClientRect();
     const scaleX = CANVAS_W / rect.width;
     const scaleY = CANVAS_H / rect.height;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const touch = e.touches?.length ? e.touches[0] : e.changedTouches?.[0];
+    const clientX = touch ? touch.clientX : e.clientX;
+    const clientY = touch ? touch.clientY : e.clientY;
     return {
       x: (clientX - rect.left) * scaleX,
       y: (clientY - rect.top) * scaleY,
@@ -1087,6 +1088,8 @@ export default function GravityLab() {
         width={CANVAS_W}
         height={CANVAS_H}
         onClick={handleCanvasClick}
+        onTouchStart={(e) => { e.preventDefault(); handleCanvasMouseMove(e); }}
+        onTouchMove={(e) => { e.preventDefault(); handleCanvasMouseMove(e); }}
         onTouchEnd={(e) => { e.preventDefault(); handleCanvasClick(e); }}
         onMouseMove={handleCanvasMouseMove}
         onMouseLeave={() => { mouseRef.current = { x: -999, y: -999 }; }}
