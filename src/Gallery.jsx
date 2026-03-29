@@ -568,17 +568,17 @@ export default function Gallery() {
           {GAMES.map((game) => {
             const isHovered = hovered === game.id;
             return (
-              <div
+              <a
                 key={game.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => navigate(game.path)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(game.path); } }}
+                href={game.path}
+                onClick={(e) => { e.preventDefault(); navigate(game.path); }}
                 onMouseEnter={() => setHovered(game.id)}
                 onMouseLeave={() => setHovered(null)}
                 onFocus={() => setHovered(game.id)}
                 onBlur={() => setHovered(null)}
+                aria-label={`Play ${game.title} — ${game.subtitle}`}
                 style={{
+                  textDecoration: 'none',
                   position: 'relative',
                   background: cardBg,
                   border: `2px solid ${isHovered ? game.colors[0] + 'cc' : cardBorder}`,
@@ -686,7 +686,7 @@ export default function Gallery() {
                 }}>
                   Play →
                 </div>
-              </div>
+              </a>
             );
           })}
 
