@@ -7,6 +7,17 @@ import { useNavigate } from 'react-router-dom';
 */
 const GAMES = [
   {
+    id: 'wind-rider',
+    title: 'Wind Rider',
+    subtitle: 'trim sails, catch wind, surf to glory',
+    emoji: '⛵',
+    path: '/wind-rider',
+    colors: ['#06b6d4', '#2563eb'],
+    description: 'A pseudo-3D sailing adventure where kids learn points of sail, wind direction, and how sail trim changes speed. Steer smart, trim smooth, and collect sea treasures!',
+    tags: ['arcade', 'science', 'sailing'],
+  },
+
+  {
     id: 'relativistic-racer_arcade',
     title: 'Relativistic Racer',
     subtitle: 'race at the speed of light — sort of',

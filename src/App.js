@@ -22,6 +22,7 @@ const GravityLab = React.lazy(() => import('./games/GravityLab'));
 const DebugDynasty = React.lazy(() => import('./games/DebugDynasty'));
 const MathPracticeRoom = React.lazy(() => import('./games/MathPracticeRoom'));
 const RelativisticRacer_Arcade = React.lazy(() => import('./games/RelativisticRacer_Arcade'));
+const WindRider = React.lazy(() => import('./games/WindRider'));
 
 // Per-page SEO metadata
 const PAGE_META = {
@@ -52,6 +53,10 @@ const PAGE_META = {
   '/relativistic-racer_arcade': {
     title: 'Relativistic Racer',
     description: 'Race at near-light speed and feel Einstein\'s special relativity for real! A free science arcade game where faster means time slows down.',
+  },
+  '/wind-rider': {
+    title: 'Wind Rider',
+    description: 'Sail the ocean with a behind-the-boat view and learn wind direction, points of sail, and sail trim. A free kid-friendly sailing game.',
   },
 };
 
@@ -186,6 +191,7 @@ export default function App() {
           <Route path="/debug-dynasty" element={<DebugDynasty />} />
           <Route path="/math-practice-room" element={<MathPracticeRoom />} />
           <Route path="/relativistic-racer_arcade" element={<RelativisticRacer_Arcade />} />
+          <Route path="/wind-rider" element={<WindRider />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </React.Suspense>
