@@ -10,8 +10,6 @@
 **Site name:** Odd Noodle Games
 **Purpose:** A collection of fun, kid-friendly browser games playable on any device
 **Audience:** Children (primary), curious adults (welcome)
-**Status:** Moving from self-hosted to publicly accessible
-**Current games:** Fish for Fruit · Number Nomad · Embassy of Oddballs
 
 ---
 
