@@ -15,10 +15,14 @@
 
 ## Repository Structure
 - `public/index.html`: HTML shell (`<div id="root">`)
+- `public/sitemap.xml`: static sitemap — add a `<url>` entry for every new game
+- `public/robots.txt`: points to sitemap; no changes needed when adding games
+- `public/og/`: OG/Twitter social share images — add `[game-slug].png` (1200×630px) per game
 - `src/index.js`: app mount (`ReactDOM.createRoot`, `BrowserRouter`, `StrictMode`)
-- `src/App.js`: route registry (add new game routes here)
-- `src/Gallery.jsx`: landing page; game cards are driven by `GAMES`
+- `src/App.js`: route registry and `PAGE_META` SEO config (add entries here for every new game)
+- `src/Gallery.jsx`: landing page; game cards driven by `export const GAMES`
 - `src/games/*.jsx`: one self-contained file per game
+- `src/components/GamePageWrapper.jsx`: wraps every game route with SEO content + Related Games
 - `GAME_GUIDE.md`: game-building reference patterns
 - `README.md`: deployment/infrastructure details
 
@@ -67,9 +71,73 @@
 - Stop services: `docker compose down`
 
 ## Adding a New Game
-1. Create `src/games/YourGame.jsx` using `GAME_GUIDE.md` patterns.
-2. Register route in `src/App.js`:
-   - `import YourGame from './games/YourGame';`
-   - `<Route path="/your-game" element={<YourGame />} />`
-3. Add game metadata card to `GAMES` in `src/Gallery.jsx`.
-4. Rebuild: `docker compose up --build -d`
+
+### 1. Game component
+Create `src/games/YourGame.jsx` using `GAME_GUIDE.md` patterns.
+
+### 2. Route + SEO metadata (`src/App.js`)
+Add a lazy import and a wrapped route:
+```js
+const YourGame = React.lazy(() => import('./games/YourGame'));
+```
+```jsx
+<Route path="/your-game" element={
+  <GamePageWrapper path="/your-game"><YourGame /></GamePageWrapper>
+} />
+```
+Add an entry to `PAGE_META`:
+```js
+'/your-game': {
+  title: 'Your Game | Free [Genre] Game | Odd Noodle Games',  // keyword-rich, ~60 chars
+  description: 'One or two sentences describing the game. 150–160 characters max. End with "No download needed!" or similar CTA.',
+  genre: ['Genre1', 'Genre2'],           // matches the game's tags
+  image: `${BASE_URL}/og/your-game.png`, // 1200×630 social share image
+},
+```
+
+### 3. Gallery card (`src/Gallery.jsx`)
+Add an entry to the `GAMES` array:
+```js
+{
+  id: 'your-game',
+  title: 'Your Game',
+  subtitle: 'a short tagline',
+  emoji: '🎮',
+  path: '/your-game',
+  colors: ['#hex1', '#hex2'],
+  description: 'One or two sentences shown on the gallery card.',
+  tags: ['genre1', 'genre2'],
+},
+```
+
+### 4. SEO content section (`src/components/GamePageWrapper.jsx`)
+Add an entry to `GAME_SEO_CONTENT`:
+```js
+'/your-game': {
+  name: 'Your Game',
+  tagline: 'Free [Genre] Game',
+  about: '2–3 sentences describing the game world, premise, and appeal.',
+  howToPlay: '2–3 sentences explaining the core loop and win condition.',
+  controls: 'Arrow Keys — Move | Space — Action | Mobile: on-screen controls',
+  whatYoullLearn: '1–2 sentences on educational or skill-building value.',
+},
+```
+
+### 5. Social share image
+Add `public/og/your-game.png` — 1200×630px. Used by `og:image` and `twitter:image`.
+
+### 6. Sitemap (`public/sitemap.xml`)
+Add a `<url>` block for the new game:
+```xml
+<url>
+  <loc>https://oddnoodlegames.com/your-game</loc>
+  <lastmod>YYYY-MM-DD</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.8</priority>
+</url>
+```
+
+### 7. Rebuild
+```
+docker compose up --build -d
+```
