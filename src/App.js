@@ -23,26 +23,89 @@ const DebugDynasty = React.lazy(() => import('./games/DebugDynasty'));
 const MathPracticeRoom = React.lazy(() => import('./games/MathPracticeRoom'));
 const RelativisticRacer_Arcade = React.lazy(() => import('./games/RelativisticRacer_Arcade'));
 
-// Page title map — keeps browser tabs and bookmarks useful
-const PAGE_TITLES = {
-  '/fish-for-fruit': 'Fish for Fruit',
-  '/number-nomad': 'Number Nomad',
-  '/embassy-of-oddballs': 'Embassy of Oddballs',
-  '/gravity-lab': 'Gravity Lab',
-  '/debug-dynasty': 'Debug Dynasty',
-  '/math-practice-room': 'Math Practice Room',
-  '/relativistic-racer_arcade': 'Relativistic Racer',
+// Per-page SEO metadata
+const PAGE_META = {
+  '/fish-for-fruit': {
+    title: 'Fish for Fruit',
+    description: 'Transform between fish and fruit in this surreal underwater arcade game. Dodge divers, eat falling fruit, and collect power-ups. Free to play!',
+  },
+  '/number-nomad': {
+    title: 'Number Nomad',
+    description: 'Jump, dash and wall-slide through hand-drawn worlds solving maths equations. A free educational platformer game for kids.',
+  },
+  '/embassy-of-oddballs': {
+    title: 'Embassy of Oddballs',
+    description: 'Match real countries to solve ridiculous international crises. Learn world geography through absurd diplomacy. Free browser game for kids.',
+  },
+  '/gravity-lab': {
+    title: 'Gravity Lab',
+    description: 'Place planets to bend a comet\'s path with gravity. Solve space puzzles and learn how gravity works. Free science game for kids.',
+  },
+  '/debug-dynasty': {
+    title: 'Debug Dynasty',
+    description: 'Find the glitches in the system and squash bugs to rule the Debug Dynasty! A free coding-themed arcade game.',
+  },
+  '/math-practice-room': {
+    title: 'Math Practice Room',
+    description: 'Practise addition and subtraction with doubles, friends of 10, and bridging. A free cosy maths game for kids.',
+  },
+  '/relativistic-racer_arcade': {
+    title: 'Relativistic Racer',
+    description: 'Race at near-light speed and feel Einstein\'s special relativity for real! A free science arcade game where faster means time slows down.',
+  },
 };
 
-// Scroll to top + update document title on every route change
+const BASE_URL = 'https://oddnoodlegames.com';
+
+// Scroll to top + update document title, description and canonical on every route change
 function RouteEffects() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
-    const gameTitle = PAGE_TITLES[pathname];
-    document.title = gameTitle
-      ? `${gameTitle} — Odd Noodle Games`
-      : 'Odd Noodle Games';
+
+    const meta = PAGE_META[pathname];
+
+    // Title
+    document.title = meta
+      ? `${meta.title} — Odd Noodle Games`
+      : 'Odd Noodle Games — Free Browser Games for Kids';
+
+    // Meta description
+    let descEl = document.querySelector('meta[name="description"]');
+    if (descEl) {
+      descEl.setAttribute('content', meta
+        ? meta.description
+        : 'Odd Noodle Games — free, quirky browser games for kids! Play Fish for Fruit, Number Nomad, Embassy of Oddballs, Gravity Lab, and more. No download needed.'
+      );
+    }
+
+    // Canonical
+    const canonical = document.getElementById('canonical-link');
+    if (canonical) {
+      canonical.setAttribute('href', `${BASE_URL}${pathname}`);
+    }
+
+    // og:url
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', `${BASE_URL}${pathname}`);
+
+    // og:title
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', meta
+        ? `${meta.title} — Odd Noodle Games`
+        : 'Odd Noodle Games — Free Browser Games for Kids'
+      );
+    }
+
+    // og:description
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) {
+      ogDesc.setAttribute('content', meta
+        ? meta.description
+        : 'Fun, quirky browser games for kids — play free, no download needed! Arcade, puzzles, maths, and more.'
+      );
+    }
   }, [pathname]);
   return null;
 }
