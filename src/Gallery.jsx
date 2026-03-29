@@ -7,6 +7,17 @@ import { useNavigate } from 'react-router-dom';
 */
 const GAMES = [
   {
+    id: 'math-practice-room',
+    title: 'Math Practice Room',
+    subtitle: 'a new adventure awaits',
+    emoji: '🎯',
+    path: '/math-practice-room',
+    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
+    description: 'A brand new game added to the arcade!',
+    tags: ['new', 'arcade'],
+  },
+
+  {
     id: 'fish-for-fruit',
     title: 'Fish for Fruit',
     subtitle: 'an identity crisis in the deep',

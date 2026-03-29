@@ -6,6 +6,7 @@ import NumberNomad from './games/NumberNomad';
 import EmbassyOfOddballs from './games/EmbassyOfOddballs';
 import GravityLab from './games/GravityLab';
 import DebugDynasty from './games/DebugDynasty';
+import MathPracticeRoom from './games/MathPracticeRoom';
 
 /*
   ============================================================
@@ -29,6 +30,7 @@ export default function App() {
       <Route path="/gravity-lab" element={<GravityLab />} />
       {/* Add new game routes here */}
             <Route path="/debug-dynasty" element={<DebugDynasty />} />
+        <Route path="/math-practice-room" element={<MathPracticeRoom />} />
 </Routes>
   );
 }
