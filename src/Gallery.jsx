@@ -299,6 +299,7 @@ export default function Gallery() {
     }}>
       <canvas
         ref={canvasRef}
+        aria-hidden="true"
         style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}
       />
 
@@ -466,6 +467,7 @@ export default function Gallery() {
                 width="130" height="142"
                 viewBox="0 0 148 162"
                 xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
                 style={{ flexShrink: 0, filter: bowlFilter, transition: 'filter 0.5s' }}
               >
                 <defs>
