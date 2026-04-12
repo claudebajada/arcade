@@ -108,7 +108,7 @@ const C = {
 };
 const FONT_DISPLAY = "'Rye', 'Georgia', serif";
 const FONT_BODY = "'Special Elite', 'Courier New', monospace";
-const FONT_MONO = "'Major Mono Display', 'Courier New', monospace";
+const FONT_MONO = "'Share Tech Mono', 'Courier New', monospace";
 
 const STAGE_LABELS = [
   "KEY", "PLUG", "R3", "R2", "R1", "MIRROR", "R1", "R2", "R3", "PLUG", "LIGHT",
@@ -121,7 +121,7 @@ export default function Enigma() {
   useEffect(() => {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Major+Mono+Display&display=swap";
+    link.href = "https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Share+Tech+Mono&display=swap";
     document.head.appendChild(link);
     return () => { document.head.removeChild(link); };
   }, []);
@@ -217,6 +217,7 @@ export default function Enigma() {
   // decode runner
   useEffect(() => {
     if (!decRunning) return;
+    let cancelled = false;
     const cipher = decCipher.toUpperCase().replace(/[^A-Z]/g, "");
     let i = 0;
     let runPos = { L: idx(decL || "A"), M: idx(decM || "A"), R: idx(decR || "A") };
@@ -224,6 +225,7 @@ export default function Enigma() {
     setDecOut("");
     setPos(runPos);
     const tick = () => {
+      if (cancelled) return;
       if (i >= cipher.length) { setDecRunning(false); return; }
       const c = cipher[i++];
       const { output, path: p, pos: np } = encryptLetter(c, runPos, plugMap);
@@ -234,10 +236,10 @@ export default function Enigma() {
       setLastInput(c);
       setDecOut((prev) => prev + output);
       setTimeout(() => setLit(null), 250);
-      if (decRunning) setTimeout(tick, 360);
+      setTimeout(tick, 360);
     };
     tick();
-
+    return () => { cancelled = true; };
   }, [decRunning]);
 
   const rotorStep = (slot, delta) => {
@@ -275,9 +277,9 @@ export default function Enigma() {
         padding: "4px 0", margin: "4px 2px", fontFamily: FONT_MONO,
         boxShadow: "inset 0 0 10px rgba(255,201,74,.4), inset 0 0 30px rgba(0,0,0,.9)",
       }}>
-        <div style={{ fontSize: 11, color: C.glow, opacity: .35 }}>{chr(pos[slot] + 1)}</div>
-        <div style={{ fontSize: 26, fontWeight: "bold", color: C.glowHot, textShadow: `0 0 10px ${C.glow}` }}>{chr(pos[slot])}</div>
         <div style={{ fontSize: 11, color: C.glow, opacity: .35 }}>{chr(pos[slot] - 1)}</div>
+        <div style={{ fontSize: 26, fontWeight: "bold", color: C.glowHot, textShadow: `0 0 10px ${C.glow}` }}>{chr(pos[slot])}</div>
+        <div style={{ fontSize: 11, color: C.glow, opacity: .35 }}>{chr(pos[slot] + 1)}</div>
       </div>
       <div style={{ display: "flex", gap: 3, marginTop: 4 }}>
         {[-1, 1].map((d) => (
