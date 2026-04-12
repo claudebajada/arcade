@@ -594,6 +594,29 @@ export default function Enigma() {
                       {board(ROW1, key)}
                       <div style={{ padding: "0 20px" }}>{board(ROW2, key)}</div>
                       <div style={{ padding: "0 8px" }}>{board(ROW3, key)}</div>
+                      {mode === "encode" && (
+                        <div style={{ display: "flex", justifyContent: "center", marginTop: 14 }}>
+                          <button
+                            onClick={resetMessage}
+                            disabled={!inText}
+                            title="Clear your typed message (keeps rotor & plugboard settings)"
+                            style={{
+                              background: "linear-gradient(180deg,#c75440,#6e1f10)",
+                              color: C.paperLight,
+                              border: "1px solid #3a0f08",
+                              borderRadius: 4,
+                              padding: "10px 22px",
+                              fontFamily: FONT_DISPLAY,
+                              fontSize: 14,
+                              letterSpacing: 2,
+                              cursor: inText ? "pointer" : "not-allowed",
+                              opacity: inText ? 1 : 0.5,
+                              minHeight: 44,
+                              touchAction: "manipulation",
+                            }}
+                          >⟲ RESET MESSAGE</button>
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
