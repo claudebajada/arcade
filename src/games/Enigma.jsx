@@ -237,7 +237,7 @@ export default function Enigma() {
       if (decRunning) setTimeout(tick, 360);
     };
     tick();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [decRunning]);
 
   const rotorStep = (slot, delta) => {
