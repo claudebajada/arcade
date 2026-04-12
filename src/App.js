@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Gallery from './Gallery';
 import GamePageWrapper from './components/GamePageWrapper';
+import Enigma from './games/Enigma';
 
 /*
   ============================================================
@@ -299,7 +300,8 @@ export default function App() {
             <GamePageWrapper path="/relativistic-racer_arcade"><RelativisticRacer_Arcade /></GamePageWrapper>
           } />
           <Route path="*" element={<NotFound />} />
-        </Routes>
+                <Route path="/enigma" element={<Enigma />} />
+</Routes>
       </React.Suspense>
     </>
   );

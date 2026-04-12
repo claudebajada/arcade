@@ -7,6 +7,17 @@ import { useNavigate } from 'react-router-dom';
 */
 export const GAMES = [
   {
+    id: 'enigma',
+    title: 'Enigma',
+    subtitle: 'a new adventure awaits',
+    emoji: '🔐',
+    path: '/enigma',
+    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
+    description: 'A brand new game added to the arcade!',
+    tags: ['new', 'arcade'],
+  },
+
+  {
     id: 'relativistic-racer_arcade',
     title: 'Relativistic Racer',
     subtitle: 'race at the speed of light — sort of',
