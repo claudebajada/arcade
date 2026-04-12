@@ -530,69 +530,71 @@ export default function Enigma() {
             </div>
           </div>
         )}
-
+        
         {/* X-Ray */}
-        {(mode === "encode" || mode === "decode") && (
-        <div style={panelStyle}>
-          <h2 style={panelH2}>INSIDE THE MACHINE</h2>
-          {pipe}
-          {lastInput && (
-            <div style={{
-              textAlign: "center", marginTop: 12, padding: "10px 12px",
-              background: C.paperLight, border: `1px dashed ${C.brassDeep}`, borderRadius: 4,
-              fontFamily: FONT_DISPLAY, fontSize: 15, color: C.crimson, letterSpacing: 1,
-            }}>
-              Your <span style={{ background: "rgba(0,0,0,.07)", padding: "1px 9px", borderRadius: 3, color: C.ink }}>{lastInput}</span>
-              {" "}becomes{" "}
-              <span style={{ background: C.glow, padding: "1px 9px", borderRadius: 3, color: "#5a2800", boxShadow: `0 0 12px ${C.glow}` }}>{path[path.length - 1]}</span>!
-            </div>
-          )}
-          <div style={{ display: "flex", gap: 12, marginTop: 14, flexWrap: "wrap" }}>
-            {tapeSlot("MESSAGE TYPED", mode === "encode" ? inText : decCipher.toUpperCase().replace(/[^A-Z]/g, ""))}
-            {tapeSlot("SECRET CODE", mode === "encode" ? outText : decOut)}
-          </div>
-        </div>
+                {(mode === "encode" || mode === "decode") && (
+                  <>
+                    <div style={panelStyle}>
+                      <h2 style={panelH2}>INSIDE THE MACHINE</h2>
+                      {pipe}
+                      {lastInput && (
+                        <div style={{
+                          textAlign: "center", marginTop: 12, padding: "10px 12px",
+                          background: C.paperLight, border: `1px dashed ${C.brassDeep}`, borderRadius: 4,
+                          fontFamily: FONT_DISPLAY, fontSize: 15, color: C.crimson, letterSpacing: 1,
+                        }}>
+                          Your <span style={{ background: "rgba(0,0,0,.07)", padding: "1px 9px", borderRadius: 3, color: C.ink }}>{lastInput}</span>
+                          {" "}becomes{" "}
+                          <span style={{ background: C.glow, padding: "1px 9px", borderRadius: 3, color: "#5a2800", boxShadow: `0 0 12px ${C.glow}` }}>{path[path.length - 1]}</span>!
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: 12, marginTop: 14, flexWrap: "wrap" }}>
+                        {tapeSlot("MESSAGE TYPED", mode === "encode" ? inText : decCipher.toUpperCase().replace(/[^A-Z]/g, ""))}
+                        {tapeSlot("SECRET CODE", mode === "encode" ? outText : decOut)}
+                      </div>
+                    </div>
 
-        {/* Boards */}
-        <div style={{
-          ...panelStyle,
-          background: "linear-gradient(180deg,#2a1d10,#1a1208)",
-          border: `2px solid ${C.brassDeep}`,
-        }}>
-          <h2 style={{ ...panelH2, color: C.brassLight, borderBottomColor: C.brass }}>
-            {mode === "encode" ? "STEP 2 · TYPE YOUR MESSAGE" : "WATCH THE MACHINE WORK"}
-          </h2>
-          {mode === "encode" && (
-            <div style={{
-              display: "flex", gap: 10, alignItems: "flex-start",
-              background: "linear-gradient(180deg,rgba(255,201,74,.14),rgba(255,201,74,.06))",
-              border: `1px solid ${C.brass}`, borderLeft: `4px solid ${C.glow}`,
-              borderRadius: 4, padding: "10px 12px", marginBottom: 14, color: C.paper, fontSize: 12,
-            }}>
-              <span style={{ fontSize: 20 }}>💡</span>
-              <div>
-                <b style={{ color: C.glowHot }}>No spacebar!</b> The real 1930s Enigma had only 26 letter keys.
-                Type <b style={{
-                  background: C.glow, color: "#2a1500", padding: "1px 8px", borderRadius: 3,
-                  fontFamily: FONT_MONO, boxShadow: `0 0 10px rgba(255,201,74,.5)`,
-                }}>X</b> for a space: HELLO WORLD → HELLOXWORLD.
-              </div>
-            </div>
-          )}
-          <div style={{ color: C.brassLight, textAlign: "center", fontSize: 10, letterSpacing: 2, margin: "6px 0", opacity: .8 }}>
-            💡 LAMPBOARD — the secret letter lights up
-          </div>
-          {board(ROW1, lamp)}
-          <div style={{ padding: "0 20px" }}>{board(ROW2, lamp)}</div>
-          <div style={{ padding: "0 8px" }}>{board(ROW3, lamp)}</div>
-          <div style={{ color: C.brassLight, textAlign: "center", fontSize: 10, letterSpacing: 2, margin: "14px 0 6px", opacity: .8 }}>
-            ⌨ KEYBOARD — tap a letter (or use your own!)
-          </div>
-          {board(ROW1, key)}
-          <div style={{ padding: "0 20px" }}>{board(ROW2, key)}</div>
-          <div style={{ padding: "0 8px" }}>{board(ROW3, key)}</div>
-        </div>
-        )}
+                    {/* Boards */}
+                    <div style={{
+                      ...panelStyle,
+                      background: "linear-gradient(180deg,#2a1d10,#1a1208)",
+                      border: `2px solid ${C.brassDeep}`,
+                    }}>
+                      <h2 style={{ ...panelH2, color: C.brassLight, borderBottomColor: C.brass }}>
+                        {mode === "encode" ? "STEP 2 · TYPE YOUR MESSAGE" : "WATCH THE MACHINE WORK"}
+                      </h2>
+                      {mode === "encode" && (
+                        <div style={{
+                          display: "flex", gap: 10, alignItems: "flex-start",
+                          background: "linear-gradient(180deg,rgba(255,201,74,.14),rgba(255,201,74,.06))",
+                          border: `1px solid ${C.brass}`, borderLeft: `4px solid ${C.glow}`,
+                          borderRadius: 4, padding: "10px 12px", marginBottom: 14, color: C.paper, fontSize: 12,
+                        }}>
+                          <span style={{ fontSize: 20 }}>💡</span>
+                          <div>
+                            <b style={{ color: C.glowHot }}>No spacebar!</b> The real 1930s Enigma had only 26 letter keys.
+                            Type <b style={{
+                              background: C.glow, color: "#2a1500", padding: "1px 8px", borderRadius: 3,
+                              fontFamily: FONT_MONO, boxShadow: `0 0 10px rgba(255,201,74,.5)`,
+                            }}>X</b> for a space: HELLO WORLD → HELLOXWORLD.
+                          </div>
+                        </div>
+                      )}
+                      <div style={{ color: C.brassLight, textAlign: "center", fontSize: 10, letterSpacing: 2, margin: "6px 0", opacity: .8 }}>
+                        💡 LAMPBOARD — the secret letter lights up
+                      </div>
+                      {board(ROW1, lamp)}
+                      <div style={{ padding: "0 20px" }}>{board(ROW2, lamp)}</div>
+                      <div style={{ padding: "0 8px" }}>{board(ROW3, lamp)}</div>
+                      <div style={{ color: C.brassLight, textAlign: "center", fontSize: 10, letterSpacing: 2, margin: "14px 0 6px", opacity: .8 }}>
+                        ⌨ KEYBOARD — tap a letter (or use your own!)
+                      </div>
+                      {board(ROW1, key)}
+                      <div style={{ padding: "0 20px" }}>{board(ROW2, key)}</div>
+                      <div style={{ padding: "0 8px" }}>{board(ROW3, key)}</div>
+                    </div>
+                  </>
+                )}
 
         {/* Mission Card (encode only) */}
         {mode === "encode" && (
