@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Gallery from './Gallery';
 import GamePageWrapper from './components/GamePageWrapper';
 import Enigma from './games/Enigma';
+import NoteQuest from './games/NoteQuest';
 
 /*
   ============================================================
@@ -301,6 +302,7 @@ export default function App() {
           } />
           <Route path="*" element={<NotFound />} />
                 <Route path="/enigma" element={<Enigma />} />
+        <Route path="/note-quest" element={<NoteQuest />} />
 </Routes>
       </React.Suspense>
     </>

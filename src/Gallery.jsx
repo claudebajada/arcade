@@ -7,6 +7,17 @@ import { useNavigate } from 'react-router-dom';
 */
 export const GAMES = [
   {
+    id: 'note-quest',
+    title: 'Note Quest',
+    subtitle: 'a new adventure awaits',
+    emoji: '🎶',
+    path: '/note-quest',
+    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
+    description: 'A brand new game added to the arcade!',
+    tags: ['new', 'arcade'],
+  },
+
+  {
     id: 'enigma',
     title: 'Enigma',
     subtitle: 'a new adventure awaits',
