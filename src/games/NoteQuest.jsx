@@ -1677,7 +1677,6 @@ export default function NoteQuest() {
   function mascotMessage() {
     if (screen === "menu") return { title: "Meet your guide", text: "Pick a mode, pick a path, and we shall proceed with musical mischief." };
     if (screen === "levelSelect") return { title: "Choose a level", text: "First Steps is gentle. Advanced is less gentle, but still technically polite." };
-    if (screen === "dashboard") return { title: "Teacher / parent dashboard", text: "A tidy view of stars, plays, badges, themes, and shiny collectible nonsense, now sorted by learner." };
     if (screen === "results") return { title: "Round wrap-up", text: "Review what stuck, what wobbled, and which treasures were collected along the way." };
     if (screen === "gameplay" && question) {
       if (mode === "challenge" && !answered) return { title: "Challenge mode", text: "The timer is not your enemy, but it is absolutely not your friend." };
@@ -1754,7 +1753,7 @@ export default function NoteQuest() {
         h("div", { style: { background: cardBg, borderRadius: 24, padding: "18px 18px", width: "100%", border: "2px solid " + border, boxShadow: "0 10px 24px rgba(44,39,78,0.10)", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, textAlign: "center" } },
           statCard("Total stars", "⭐ " + totalStarsAll, "#7a5a00"),
           statCard("Best streak", "🔥 " + (profile.bestStreak || 0), "#b42323"),
-          statCard("Badges", "🏅 " + totalBadges, "#6f42c1")
+          statCard("Sessions", "🎵 " + (profile.sessionsCompleted || 0), "#6f42c1")
         ),
         learnerSwitcherCard(),
         h("div", { style: { background: cardBg, borderRadius: 24, padding: "18px 18px", width: "100%", marginTop: 14, border: "2px solid " + border, boxShadow: "0 8px 18px rgba(44,39,78,0.08)" } },
@@ -1835,20 +1834,16 @@ export default function NoteQuest() {
                 h("div", { style: { flex: 1 } },
                   h("div", { style: { color: st4.color, fontSize: 18, fontWeight: 700 } }, st4.name),
                   h("div", { style: { color: muted, fontSize: 11, marginTop: 2 } }, st4.desc),
-                  h("div", { style: { color: "#6b6780", fontSize: 10, marginTop: 5 } }, stat.plays ? "⭐ " + stat.stars + " collected • best score " + stat.bestScore : "Fresh path. No dust yet.")
+                  h("div", { style: { color: "#6b6780", fontSize: 10, marginTop: 5 } }, stat.plays ? "Played " + stat.plays + "× • ⭐ " + stat.stars + " collected • best score " + stat.bestScore : "Fresh path. No dust yet.")
                 ),
                 h("div", { style: { color: st4.color, fontSize: 20 } }, "→")
               );
             })
           )
         ),
-        h("div", { style: { display: "flex", gap: 10, width: "100%", marginTop: 14, flexWrap: "wrap" } },
+        h("div", { style: { width: "100%", marginTop: 14 } },
           h("div", {
-            onClick: function() { setScreen("dashboard"); },
-            style: { flex: 1, minWidth: 180, padding: "14px 16px", borderRadius: 18, cursor: "pointer", background: theme.accentSoft, border: "2px solid " + border, color: ink, fontSize: 14, fontWeight: 700, textAlign: "center" }
-          }, "🧾 Teacher / parent dashboard"),
-          h("div", {
-            style: { flex: 1, minWidth: 180, padding: "14px 16px", borderRadius: 18, background: cardBg, border: "2px solid " + border, color: muted, fontSize: 12, lineHeight: 1.5 }
+            style: { padding: "14px 16px", borderRadius: 18, background: cardBg, border: "2px solid " + border, color: muted, fontSize: 12, lineHeight: 1.5 }
           }, "Desktop: 1-4 to answer, H for hint, P to replay sound, Enter to continue.")
         ),
         h("div", { style: { background: cardBg, borderRadius: 20, padding: "14px 16px", marginTop: 14, width: "100%", border: "2px solid " + border } },
@@ -1868,66 +1863,13 @@ export default function NoteQuest() {
     );
   }
 
-  if (screen === "dashboard") {
-    return h("div", { style: { minHeight: "100vh", background: bg, fontFamily: fn, overflow: "auto", color: ink } },
-      renderArcadeBackButton(navigate),
-      h("div", {
-        onClick: function() { setScreen("menu"); },
-        style: { position: "absolute", top: 12, left: 16, color: theme.accent, fontSize: 12, cursor: "pointer", zIndex: 10, padding: "8px 14px", borderRadius: 8, background: "rgba(255,255,255,0.92)", border: "2px solid " + border, fontFamily: "'Courier New',monospace", letterSpacing: 2 }
-      }, "← BACK"),
-      h("div", { style: { maxWidth: 560, margin: "0 auto", padding: "60px 20px 40px", display: "flex", flexDirection: "column", alignItems: "center" } },
-        mascotBubble(theme, mascot.title, mascot.text),
-        h("h2", { style: { color: ink, fontSize: 24, fontWeight: 700, margin: "0 0 8px" } }, "Teacher / Parent Dashboard"),
-        h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "center", marginBottom: 14 } },
-          h("div", { style: { color: muted, fontSize: 12, fontWeight: 700 } }, "Viewing learner: " + displayProfileName(profile)),
-          h("div", {
-            onClick: function() { renameProfile(activeProfileId); },
-            style: { padding: "6px 10px", borderRadius: 999, background: "#ffffff", border: "2px solid " + border, color: ink, fontSize: 11, fontWeight: 700, cursor: "pointer" }
-          }, isPlaceholderName(profile.name) ? "✏️ Name learner" : "✏️ Rename")
-        ),
-        learnerSwitcherCard(),
-        h("div", { style: { background: cardBg, borderRadius: 20, padding: 18, width: "100%", border: "2px solid " + border, marginBottom: 14, boxShadow: "0 6px 14px rgba(44,39,78,0.06)" } },
-          h("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, textAlign: "center" } },
-            statCard("Sessions", String(profile.sessionsCompleted || 0), theme.accent, true),
-            statCard("Challenge clears", String(profile.challengeWins || 0), "#d97706", true),
-            statCard("Themes open", String(unlockedThemes.filter(function(id) { return visibleThemesForProfile(profile).some(function(t) { return t.id === id; }); }).length) + "/" + visibleThemesForProfile(profile).length, "#2f855a", true)
-          )
-        ),
-        h("div", { style: { background: cardBg, borderRadius: 20, padding: 18, width: "100%", border: "2px solid " + border, marginBottom: 14, boxShadow: "0 6px 14px rgba(44,39,78,0.06)" } },
-          h("div", { style: { color: ink, fontSize: 15, fontWeight: 700, marginBottom: 10 } }, "Progress by path"),
-          h("div", { style: { display: "flex", flexDirection: "column", gap: 10 } },
-            streamStats.map(function(ss) {
-              return h("div", { key: ss.stream.id, style: { padding: "12px 14px", borderRadius: 16, background: softCard, border: "2px solid " + ss.stream.color + "44" } },
-                h("div", { style: { color: ss.stream.color, fontSize: 15, fontWeight: 700 } }, ss.stream.emoji + " " + ss.stream.name),
-                h("div", { style: { color: muted, fontSize: 12, marginTop: 4 } }, ss.plays ? "Played " + ss.plays + " time" + (ss.plays === 1 ? "" : "s") + " • " + ss.stars + " stars collected • best score " + ss.bestScore : "Not started yet.")
-              );
-            })
-          )
-        ),
-        h("div", { style: { background: cardBg, borderRadius: 20, padding: 18, width: "100%", border: "2px solid " + border, marginBottom: 14, boxShadow: "0 6px 14px rgba(44,39,78,0.06)" } },
-          h("div", { style: { color: ink, fontSize: 15, fontWeight: 700, marginBottom: 10 } }, "Badges and collectibles"),
-          h("div", { style: { color: muted, fontSize: 12, marginBottom: 10 } }, Object.keys(profile.badges || {}).length + " badges, " + unlockedCollectibles.length + " collectibles."),
-          h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
-            BADGE_DEFS.filter(function(b) { return profile.badges && profile.badges[b.id]; }).map(function(b) {
-              return h("div", { key: b.id, style: { padding: "8px 10px", borderRadius: 999, background: theme.accentSoft, border: "2px solid " + border, color: ink, fontSize: 12, fontWeight: 700 } }, b.emoji + " " + b.name);
-            }),
-            unlockedCollectibles.map(function(c) {
-              return h("div", { key: c.id, style: { padding: "8px 10px", borderRadius: 999, background: "#fff9dd", border: "2px solid #e5cf7d", color: ink, fontSize: 12, fontWeight: 700 } }, c.emoji + " " + c.name);
-            })
-          )
-        )
-      )
-    );
-  }
-
   if (screen === "levelSelect") {
     var st = STREAMS.find(function(item) { return item.id === stream; });
     var currentMode = modeById(mode);
     return h("div", { style: { minHeight: "100vh", background: bg, fontFamily: fn, overflow: "auto", color: ink } },
-      renderArcadeBackButton(navigate),
       h("div", {
         onClick: function() { setScreen("menu"); },
-        style: { position: "absolute", top: 12, left: 16, color: theme.accent, fontSize: 12, cursor: "pointer", zIndex: 10, padding: "8px 14px", borderRadius: 8, background: "rgba(255,255,255,0.92)", border: "2px solid " + border, fontFamily: "'Courier New',monospace", letterSpacing: 2 }
+        style: { position: "fixed", top: 12, left: 16, color: theme.accent, fontSize: 12, cursor: "pointer", zIndex: 40, padding: "8px 14px", borderRadius: 8, background: "rgba(255,255,255,0.92)", border: "2px solid " + border, fontFamily: "'Courier New',monospace", letterSpacing: 2 }
       }, "← BACK"),
       h("div", { style: { maxWidth: 500, margin: "0 auto", padding: "60px 20px 40px", display: "flex", flexDirection: "column", alignItems: "center" } },
         mascotBubble(theme, mascot.title, mascot.text),
@@ -2072,10 +2014,9 @@ export default function NoteQuest() {
     var enc = stars === 3 ? "🌟 Music Master!" : stars === 2 ? "🎉 Amazing work!" : stars === 1 ? "👍 Good start!" : "💪 Keep going!";
     var reviewWins = answers.filter(function(a) { return a.isReview && a.correct; }).length;
     return h("div", { style: { minHeight: "100vh", background: bg, fontFamily: fn, overflow: "auto", color: ink } },
-      renderArcadeBackButton(navigate),
       h("div", {
         onClick: function() { setScreen("menu"); },
-        style: { position: "absolute", top: 12, left: 16, color: theme.accent, fontSize: 12, cursor: "pointer", zIndex: 10, padding: "8px 14px", borderRadius: 8, background: "rgba(255,255,255,0.92)", border: "2px solid " + border, fontFamily: "'Courier New',monospace", letterSpacing: 2 }
+        style: { position: "fixed", top: 12, left: 16, color: theme.accent, fontSize: 12, cursor: "pointer", zIndex: 40, padding: "8px 14px", borderRadius: 8, background: "rgba(255,255,255,0.92)", border: "2px solid " + border, fontFamily: "'Courier New',monospace", letterSpacing: 2 }
       }, "← HOME"),
       h("div", { style: { maxWidth: 500, margin: "0 auto", padding: "60px 20px 40px", display: "flex", flexDirection: "column", alignItems: "center" } },
         mascotBubble(theme, mascot.title, mascot.text),

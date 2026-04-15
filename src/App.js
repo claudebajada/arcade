@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Gallery from './Gallery';
 import GamePageWrapper from './components/GamePageWrapper';
-import Enigma from './games/Enigma';
-import NoteQuest from './games/NoteQuest';
 
 /*
   ============================================================
@@ -27,6 +25,8 @@ const GravityLab = React.lazy(() => import('./games/GravityLab'));
 const DebugDynasty = React.lazy(() => import('./games/DebugDynasty'));
 const MathPracticeRoom = React.lazy(() => import('./games/MathPracticeRoom'));
 const RelativisticRacer_Arcade = React.lazy(() => import('./games/RelativisticRacer_Arcade'));
+const Enigma = React.lazy(() => import('./games/Enigma'));
+const NoteQuest = React.lazy(() => import('./games/NoteQuest'));
 
 const BASE_URL = 'https://oddnoodlegames.com';
 
@@ -74,6 +74,18 @@ const PAGE_META = {
     description: "Race at near-light speed and feel Einstein's special relativity for real. The faster you fly, the slower time ticks. A free science arcade game — no download needed!",
     genre: ['Arcade', 'Science'],
     image: `${BASE_URL}/og/relativistic-racer.png`,
+  },
+  '/enigma': {
+    title: 'Enigma | Free Cipher & Code Machine Game | Odd Noodle Games',
+    description: 'Operate a replica Enigma machine — set rotors, wire the plugboard, and encrypt secret messages just like WWII codebreakers. A free history & puzzle game. No download needed!',
+    genre: ['Puzzle', 'History', 'Educational'],
+    image: `${BASE_URL}/og/enigma.png`,
+  },
+  '/note-quest': {
+    title: 'Note Quest | Free Music Theory Game for Kids | Odd Noodle Games',
+    description: 'Learn notes, chords, intervals, and key signatures through quizzes and ear training. A free, badge-filled music theory adventure for kids. No download needed!',
+    genre: ['Educational', 'Music'],
+    image: `${BASE_URL}/og/note-quest.png`,
   },
 };
 
@@ -300,10 +312,14 @@ export default function App() {
           <Route path="/relativistic-racer_arcade" element={
             <GamePageWrapper path="/relativistic-racer_arcade"><RelativisticRacer_Arcade /></GamePageWrapper>
           } />
+          <Route path="/enigma" element={
+            <GamePageWrapper path="/enigma"><Enigma /></GamePageWrapper>
+          } />
+          <Route path="/note-quest" element={
+            <GamePageWrapper path="/note-quest"><NoteQuest /></GamePageWrapper>
+          } />
           <Route path="*" element={<NotFound />} />
-                <Route path="/enigma" element={<Enigma />} />
-        <Route path="/note-quest" element={<NoteQuest />} />
-</Routes>
+        </Routes>
       </React.Suspense>
     </>
   );
