@@ -63,6 +63,22 @@ const GAME_SEO_CONTENT = {
     controls: 'Arrow Keys / WASD — Steer the ship | Space Bar — Boost (uses fuel) | Shift — Brake | Mouse / Gamepad supported | Mobile: tilt-to-steer or on-screen controls',
     whatYoullLearn: 'Relativistic Racer makes special relativity tangible. Players directly observe time dilation and length contraction as gameplay mechanics, building intuition for why fast-moving objects experience time differently — concepts from Einstein\'s 1905 paper, no equations required.',
   },
+  '/enigma': {
+    name: 'Enigma',
+    tagline: 'Free Cipher & Code Machine Game',
+    about: 'Enigma is an interactive replica of the famous WWII Enigma cipher machine. Set your rotor positions, wire up the plugboard, and watch each keystroke travel through the machine\'s electrical path in real time. Encode top-secret messages or decode intercepted ciphertext — just like the codebreakers of Bletchley Park.',
+    howToPlay: 'Choose a mode: Encode a message of your own, or Decode one of three historical-style challenges. Configure the three rotors and optional plugboard pairs, then type your message letter by letter to see it encrypted. In decode mode, use the provided starting settings and type the ciphertext to reveal the hidden message.',
+    controls: 'Keyboard — Type letters to encrypt them | Mouse / Tap — Click the on-screen keyboard | Rotor controls — Click rotor labels to step positions | Plugboard — Type letter pairs into the input field',
+    whatYoullLearn: 'Enigma teaches the fundamentals of substitution ciphers, symmetric encryption, and the history of WWII cryptography. Players gain intuition for why cipher complexity matters and how the same machine settings are needed to both encrypt and decrypt — a core concept in cryptography and computer security.',
+  },
+  '/note-quest': {
+    name: 'Note Quest',
+    tagline: 'Free Music Theory Game for Kids',
+    about: 'Note Quest is a music theory quiz adventure packed with ear training, note reading, chord building, rhythm, and instrument knowledge. Choose your learning path — Notes, Chords, Rhythm, Scales, Ear Training, or Guitar & Ukulele — and level up through beginner to advanced questions. Collect stars, badges, and unlock new themes as you go.',
+    howToPlay: 'Pick a mode (Learn, Quiz, or timed Challenge), choose a learning stream, then select a level. Answer multiple-choice questions to earn up to three stars per level. Correct answers build your streak and score; hints are available in Learn mode. Finish a level to see your results and unlock rewards.',
+    controls: 'Mouse / Tap — Select an answer | Keyboard 1–4 — Quick-select options | H — Show hint (Learn mode) | P — Replay audio question | Enter — Continue after answering',
+    whatYoullLearn: 'Note Quest builds well-rounded music literacy: note names on the treble clef, interval recognition, chord construction, key signatures, time signatures, mode names, and basic guitar and ukulele chord shapes. Regular play develops the musical ear alongside theoretical understanding.',
+  },
 };
 
 // Colour tokens consistent with the site's dark theme

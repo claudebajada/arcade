@@ -9,23 +9,23 @@ export const GAMES = [
   {
     id: 'note-quest',
     title: 'Note Quest',
-    subtitle: 'a new adventure awaits',
+    subtitle: 'level up your music theory',
     emoji: '🎶',
     path: '/note-quest',
-    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
-    description: 'A brand new game added to the arcade!',
-    tags: ['new', 'arcade'],
+    colors: ['#f59e0b', '#8b5cf6'],
+    description: 'Quiz yourself on notes, chords, intervals, rhythm, scales, and ear training. Collect stars, earn badges, and unlock themes as you build real music theory knowledge!',
+    tags: ['educational', 'music'],
   },
 
   {
     id: 'enigma',
     title: 'Enigma',
-    subtitle: 'a new adventure awaits',
+    subtitle: 'crack the code, save the world',
     emoji: '🔐',
     path: '/enigma',
-    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
-    description: 'A brand new game added to the arcade!',
-    tags: ['new', 'arcade'],
+    colors: ['#10b981', '#1d4ed8'],
+    description: 'Operate a fully working replica of the WWII Enigma cipher machine. Set rotors, wire the plugboard, and encrypt or decode secret messages — just like Bletchley Park.',
+    tags: ['puzzle', 'history', 'educational'],
   },
 
   {
