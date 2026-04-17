@@ -9,12 +9,12 @@ export const GAMES = [
   {
     id: 'ukulele-quest',
     title: 'Ukulele Quest',
-    subtitle: 'a new adventure awaits',
+    subtitle: 'learn the fretboard, one strum at a time',
     emoji: '🎸',
     path: '/ukulele-quest',
-    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
-    description: 'A brand new game added to the arcade!',
-    tags: ['new', 'arcade'],
+    colors: ['#e85d3a', '#f4a93b'],
+    description: 'A classroom ukulele game for shared tablets. Hunt notes across the fretboard and build chord shapes through Pass & Play, Council, or GamesMaster modes.',
+    tags: ['educational', 'music'],
   },
 
   {
