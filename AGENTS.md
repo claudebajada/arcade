@@ -18,6 +18,9 @@
 - `public/sitemap.xml`: static sitemap — add a `<url>` entry for every new game
 - `public/robots.txt`: points to sitemap; no changes needed when adding games
 - `public/og/`: OG/Twitter social share images — add `[game-slug].png` (1200×630px) per game
+- `public/favicon.svg`: site favicon served at `/favicon.svg` (Google-crawlable; do **not** use a `data:` URI)
+- `public/favicon.ico`: ICO fallback for older browsers (generate a 32×32 PNG-in-ICO from `favicon.svg`)
+- `public/apple-touch-icon.png`: 180×180px PNG required by iOS for home-screen bookmarks
 - `src/index.js`: app mount (`ReactDOM.createRoot`, `BrowserRouter`, `StrictMode`)
 - `src/App.js`: route registry and `PAGE_META` SEO config (add entries here for every new game)
 - `src/Gallery.jsx`: landing page; game cards driven by `export const GAMES`
@@ -125,6 +128,8 @@ Add an entry to `GAME_SEO_CONTENT`:
 
 ### 5. Social share image
 Add `public/og/your-game.png` — 1200×630px. Used by `og:image` and `twitter:image`.
+
+> **Important:** OG images must exist as real files in `public/og/`. Without them every social preview will 404. Also update the `ItemList` JSON-LD block in `public/index.html` to include the new game.
 
 ### 6. Sitemap (`public/sitemap.xml`)
 Add a `<url>` block for the new game:

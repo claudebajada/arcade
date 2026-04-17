@@ -336,6 +336,14 @@ export default function Gallery() {
         style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}
       />
 
+      <h1 style={{
+        position: 'absolute', width: 1, height: 1,
+        padding: 0, margin: -1, overflow: 'hidden',
+        clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0,
+      }}>
+        Odd Noodle Games — Free Browser Games for Kids
+      </h1>
+
       <div style={{
         position: 'relative',
         zIndex: 1,

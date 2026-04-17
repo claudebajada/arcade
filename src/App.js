@@ -195,6 +195,15 @@ function RouteEffects() {
       );
     }
 
+    // ── og:image:alt ─────────────────────────────────────────────
+    const ogImageAlt = document.querySelector('meta[property="og:image:alt"]');
+    if (ogImageAlt) {
+      ogImageAlt.setAttribute('content', meta
+        ? meta.title.split(' | ')[0] + ' — ' + meta.description.split('.')[0]
+        : 'Odd Noodle Games — Free Browser Games for Kids'
+      );
+    }
+
     // ── JSON-LD: per-game VideoGame + WebApplication schema ───────
     if (meta) {
       upsertJsonLd('game-schema', {
