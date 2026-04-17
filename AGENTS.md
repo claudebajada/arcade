@@ -5,6 +5,21 @@
 - **Goal:** Kid-friendly browser games playable on desktop and mobile
 - **Audience:** Children first; suitable for all ages
 
+## Task Categories
+
+Not every request is "build a new game." Identify the category before proceeding.
+
+| Category | When it applies | Key files to read | See section |
+|---|---|---|---|
+| New game | Create, add, or build a game | GAME_GUIDE.md | Adding a New Game |
+| Documentation update | Edit AGENTS.md, CLAUDE.md, GAME_GUIDE.md, README.md, or in-code comments | The specific doc file | — (edit in place) |
+| To-do / Roadmap | Capture tasks, a feature wishlist, or a roadmap | TODO.md (create if absent) | — |
+| Bug fix / Refactoring | Fix a bug or improve existing code | src/games/[Game].jsx | Coding Standards |
+| Infrastructure | Docker, nginx, deployment, or environment changes | Dockerfile, docker-compose.yml, nginx/default.conf | README.md |
+| SEO / Metadata | SEO, OG images, sitemap, or meta-description updates | public/index.html, public/sitemap.xml, src/App.js, src/components/GamePageWrapper.jsx | Adding a New Game §2 §4 §6 |
+
+For any category other than "New game," do not follow the seven-step game workflow unless explicitly requested.
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -132,6 +147,12 @@
 
 ## Adding a New Game
 
+> **Helper script:** `scripts/install-game.js` automates Steps 1 and 3 for a game file that is already written:
+> ```
+> node scripts/install-game.js <path/to/Game.jsx> "Title" "emoji" "bg-color-class"
+> ```
+> After running it you still need to complete Steps 2 (SEO metadata in App.js), 4 (GamePageWrapper SEO content), 5 (OG image), 6 (sitemap), and 7 (rebuild).
+
 ### 1. Game component
 Create `src/games/YourGame.jsx` using `GAME_GUIDE.md` patterns.
 
@@ -208,7 +229,11 @@ docker compose up --build -d
 - Stream logs: `docker compose logs -f`
 - Stop services: `docker compose down`
 
-## AI Prompting Template
+## AI Prompting Guide
+
+Use the template that matches the task category. See the Task Categories table above to identify which one applies.
+
+### New Game
 
 When asking an AI agent to build a new game, use this prompt:
 
@@ -231,6 +256,27 @@ When asking an AI agent to build a new game, use this prompt:
 >
 > Theme/concept: [describe the game idea]
 
+### Documentation Update
+
+> Update the [section name] section of [filename]. [Describe what to add / change / remove]. Preserve all other existing content. Do not reformat sections that are not mentioned.
+
+### Bug Fix / Refactoring
+
+> In `src/games/[GameName].jsx`, [describe the bug or refactor goal]. Do not change any other game files. Follow the Coding Standards in AGENTS.md (single file, inline styles, no TypeScript). Rebuild with `docker compose up --build -d` to verify.
+
+### To-Do / Roadmap
+
+> Add the following items to the project to-do list (create `TODO.md` at the repo root if it doesn't exist): [list items]. Group by category if there are more than five items. Do not modify any source code.
+
+### Infrastructure / Docker
+
+> Update the Docker/nginx configuration to [describe goal]. See README.md for the current setup. Only modify [Dockerfile | docker-compose.yml | nginx/default.conf] unless you have a specific reason to touch others.
+
+### SEO / Metadata
+
+> Update the SEO metadata for [game name | the whole site]. Files to touch: [list]. Do not change game logic. See the "Adding a New Game" section of AGENTS.md for the exact field names and character limits.
+
 ## Reference Documents
 - **`GAME_GUIDE.md`** — Full developer reference: templates, canvas game loop, input handling, audio, fonts, CDN libraries. Read before writing a new game.
 - **`README.md`** — Infrastructure: Docker commands, VM deployment, reverse proxy setup.
+- **`TODO.md`** — Project task backlog and roadmap (create at repo root if it does not exist yet).
