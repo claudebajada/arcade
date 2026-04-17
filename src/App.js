@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Gallery from './Gallery';
 import GamePageWrapper from './components/GamePageWrapper';
+import UkuleleQuest from './games/UkuleleQuest';
 
 /*
   ============================================================
@@ -319,7 +320,8 @@ export default function App() {
             <GamePageWrapper path="/note-quest"><NoteQuest /></GamePageWrapper>
           } />
           <Route path="*" element={<NotFound />} />
-        </Routes>
+                <Route path="/ukulele-quest" element={<UkuleleQuest />} />
+</Routes>
       </React.Suspense>
     </>
   );

@@ -7,6 +7,17 @@ import { useNavigate } from 'react-router-dom';
 */
 export const GAMES = [
   {
+    id: 'ukulele-quest',
+    title: 'Ukulele Quest',
+    subtitle: 'a new adventure awaits',
+    emoji: '🎸',
+    path: '/ukulele-quest',
+    colors: ['#3b82f6', '#8b5cf6'], // Default blue/purple gradient
+    description: 'A brand new game added to the arcade!',
+    tags: ['new', 'arcade'],
+  },
+
+  {
     id: 'note-quest',
     title: 'Note Quest',
     subtitle: 'level up your music theory',
