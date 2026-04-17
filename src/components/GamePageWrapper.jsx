@@ -79,6 +79,14 @@ const GAME_SEO_CONTENT = {
     controls: 'Mouse / Tap — Select an answer | Keyboard 1–4 — Quick-select options | H — Show hint (Learn mode) | P — Replay audio question | Enter — Continue after answering',
     whatYoullLearn: 'Note Quest builds well-rounded music literacy: note names on the treble clef, interval recognition, chord construction, key signatures, time signatures, mode names, and basic guitar and ukulele chord shapes. Regular play develops the musical ear alongside theoretical understanding.',
   },
+  '/ukulele-quest': {
+    name: 'Ukulele Quest',
+    tagline: 'Free Classroom Ukulele Learning Game',
+    about: "Ukulele Quest is a classroom fretboard teaching game designed for shared tablets. A big, friendly ukulele neck fills the screen and kids take turns finding notes and building chord shapes. Three play modes suit different classroom styles — Pass & Play for individual turns, The Council for team discussion, and GamesMaster for teacher-led sessions with real ukuleles in students' hands.",
+    howToPlay: 'Pick a mode, a level (Note Hunter or Chord Builder), and a scoring style (team or leaderboard). On each round the screen shows a target note or chord name. Tap the fretboard to place a finger — one tap to find a note, or multiple taps to form a chord — then submit. Correct answers earn points and a confetti burst; wrong answers reveal the right shape so the whole class learns.',
+    controls: 'Tap / Mouse — Place a finger on the fretboard | Submit / Clear buttons — Confirm or reset your chord | Flip — Rotate the screen for the opposite side of the table | Menu — Return to setup',
+    whatYoullLearn: 'Ukulele Quest builds real fretboard fluency: open-string notes (G C E A), how frets map to pitch, and the finger shapes for common chords like C, Am, F, and G7. The turn-taking modes also develop musical vocabulary and collaborative learning habits that transfer to group lessons.',
+  },
 };
 
 // Colour tokens consistent with the site's dark theme

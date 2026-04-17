@@ -175,6 +175,21 @@ export default function UkuleleQuest() {
   const [confetti, setConfetti] = useState([]);
   const [showResults, setShowResults] = useState(false);
 
+  // Track timers so we can cancel them on unmount / round change / new tap.
+  // Without this, a pending auto-submit from a previous tap (or a feedback
+  // timeout from the prior round) can fire after state has moved on.
+  const autoSubmitRef = useRef(null);
+  const feedbackTimerRef = useRef(null);
+  const confettiTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (autoSubmitRef.current) clearTimeout(autoSubmitRef.current);
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+      if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
+    };
+  }, []);
+
   // ----- AUDIO -----
   const synthRef = useRef(null);
   const audioReadyRef = useRef(false);
@@ -223,6 +238,7 @@ export default function UkuleleQuest() {
   // Recalculated on resize/orientation change. Stored in state so dots
   // render at the correct (cx, cy) positions derived from hitbox centers.
   const fretboardRef = useRef(null);
+  const retryRafRef = useRef(0);
   const [fbGeom, setFbGeom] = useState(null);
   const [fretCount, setFretCount] = useState(NUM_FRETS_FULL);
 
@@ -230,7 +246,13 @@ export default function UkuleleQuest() {
     const el = fretboardRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return;
+    if (rect.width === 0 || rect.height === 0) {
+      // The fretboard was just unhidden (display:none → block) or fonts are
+      // still loading — the browser hasn't done layout yet. Retry on the next
+      // frame so strings and wires aren't stuck invisible.
+      retryRafRef.current = requestAnimationFrame(computeGeometry);
+      return;
+    }
 
     const isPortrait = window.innerHeight > window.innerWidth;
     const nFrets = isPortrait ? NUM_FRETS_COMPACT : NUM_FRETS_FULL;
@@ -296,10 +318,23 @@ export default function UkuleleQuest() {
     const onResize = () => computeGeometry();
     window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", onResize);
+
+    // ResizeObserver catches the common case where the fretboard element goes
+    // from display:none (zero-size) to visible, or reflows after Google Fonts
+    // finish loading. Without this, strings/wires can stay invisible until
+    // the user resizes the window.
+    let observer = null;
+    if (typeof ResizeObserver !== "undefined" && fretboardRef.current) {
+      observer = new ResizeObserver(() => computeGeometry());
+      observer.observe(fretboardRef.current);
+    }
+
     return () => {
       cancelAnimationFrame(raf);
+      if (retryRafRef.current) cancelAnimationFrame(retryRafRef.current);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("orientationchange", onResize);
+      if (observer) observer.disconnect();
     };
   }, [screen, computeGeometry]);
 
@@ -323,6 +358,10 @@ export default function UkuleleQuest() {
   }, []);
 
   const nextRound = useCallback(() => {
+    if (autoSubmitRef.current) {
+      clearTimeout(autoSubmitRef.current);
+      autoSubmitRef.current = null;
+    }
     setPlacedDots([]);
     setSubmitted(false);
     setGhostDots(null);
@@ -365,26 +404,6 @@ export default function UkuleleQuest() {
   }, []);
 
   // ----- INTERACTION -----
-  const onHitboxTap = useCallback((s, f) => {
-    if (submitted) return;
-    if (mode === "master") return; // teacher-led: kids play real ukuleles, no tapping.
-    if (level === "notes") {
-      setPlacedDots([{ s, f }]);
-      playNote(midiAt(s, f));
-      // Auto-submit after a beat so students see their placement register.
-      setTimeout(() => submitAnswer([{ s, f }]), 180);
-    } else {
-      setPlacedDots((prev) => {
-        const existing = prev.findIndex((d) => d.s === s && d.f === f);
-        if (existing >= 0) return prev.filter((_, i) => i !== existing);
-        const withoutSameString = prev.filter((d) => d.s !== s);
-        playNote(midiAt(s, f));
-        return [...withoutSameString, { s, f }];
-      });
-    }
-
-  }, [submitted, mode, level, playNote]);
-
   const dotsEqual = (a, b) => {
     if (a.length !== b.length) return false;
     const key = (d) => `${d.s}.${d.f}`;
@@ -432,6 +451,32 @@ export default function UkuleleQuest() {
 
   }, [submitted, prompt, placedDots, scoring, currentPlayerIdx, playStrum, playSuccess, playFail]);
 
+  const onHitboxTap = useCallback((s, f) => {
+    if (submitted) return;
+    if (mode === "master") return; // teacher-led: kids play real ukuleles, no tapping.
+    if (level === "notes") {
+      setPlacedDots([{ s, f }]);
+      playNote(midiAt(s, f));
+      // Auto-submit after a beat so students see their placement register.
+      // Cancel any pending auto-submit from a previous tap so a fast
+      // second tap replaces (not races) the first.
+      if (autoSubmitRef.current) clearTimeout(autoSubmitRef.current);
+      autoSubmitRef.current = setTimeout(() => {
+        autoSubmitRef.current = null;
+        submitAnswer([{ s, f }]);
+      }, 180);
+    } else {
+      setPlacedDots((prev) => {
+        const existing = prev.findIndex((d) => d.s === s && d.f === f);
+        if (existing >= 0) return prev.filter((_, i) => i !== existing);
+        const withoutSameString = prev.filter((d) => d.s !== s);
+        playNote(midiAt(s, f));
+        return [...withoutSameString, { s, f }];
+      });
+    }
+
+  }, [submitted, mode, level, playNote, submitAnswer]);
+
   const revealAnswer = useCallback(() => {
     if (submitted || !prompt) return;
     setSubmitted(true);
@@ -461,7 +506,11 @@ export default function UkuleleQuest() {
     let sub = "";
     if (!good) sub = p.type === "note" ? `${p.note} is the one in green` : (p.desc || p.name);
     setFeedback({ good, text, sub });
-    setTimeout(() => setFeedback(null), good ? 1400 : 1800);
+    if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+    feedbackTimerRef.current = setTimeout(() => {
+      feedbackTimerRef.current = null;
+      setFeedback(null);
+    }, good ? 1400 : 1800);
   };
 
   const spawnConfetti = () => {
@@ -477,7 +526,11 @@ export default function UkuleleQuest() {
       });
     }
     setConfetti(pieces);
-    setTimeout(() => setConfetti([]), 2000);
+    if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
+    confettiTimerRef.current = setTimeout(() => {
+      confettiTimerRef.current = null;
+      setConfetti([]);
+    }, 2000);
   };
 
   // ----- PLAYERS UI HELPERS -----
@@ -495,18 +548,23 @@ export default function UkuleleQuest() {
   // ---------- RENDER: BACK BUTTON ----------
   // Per the arcade guide, this must be present and use navigate("/").
   const backBtn = (
-    <div
+    <button
+      type="button"
       onClick={() => navigate("/")}
+      aria-label="Back to Odd Noodle arcade"
       style={{
         position: "fixed", top: 12, left: 16,
-        color: "#4a4a6a", fontSize: 12, cursor: "pointer",
-        zIndex: 300, padding: "6px 12px", borderRadius: 6,
-        background: "#0a0c2080", border: "1px solid #1a1a3a",
+        color: C.cream, fontSize: 13, cursor: "pointer",
+        zIndex: 300, padding: "8px 14px", borderRadius: 8,
+        background: C.woodDark,
+        border: `1px solid ${C.wood2}`,
+        boxShadow: "0 2px 0 rgba(0,0,0,0.25)",
         fontFamily: "'Courier New', monospace", letterSpacing: 2,
+        fontWeight: 700,
       }}
     >
       ← ARCADE
-    </div>
+    </button>
   );
 
   // ---------- RENDER: TOP BAR (pinned, outside rotating content) ----------
@@ -1148,22 +1206,22 @@ function FretboardContents({ fbGeom, fretCount, placedDots, ghostDots, onHitboxT
 
   // Dots — placed + ghost. Ghost dots skipped if already matched by placed.
   const dots = [];
-  placedDots.forEach((d, idx) => {
+  placedDots.forEach((d) => {
     const cell = cells.find((c) => c.s === d.s && c.f === d.f);
     if (!cell) return;
     dots.push(renderDot({
-      key: `p${idx}`, cx: cell.cx, cy: cell.cy,
+      key: `p${d.s}.${d.f}`, cx: cell.cx, cy: cell.cy,
       fret: d.f, correct: d.correct, dotSize, openSize,
     }));
   });
   if (ghostDots) {
-    ghostDots.forEach((d, idx) => {
+    ghostDots.forEach((d) => {
       const matched = placedDots.some((p) => p.s === d.s && p.f === d.f);
       if (matched) return;
       const cell = cells.find((c) => c.s === d.s && c.f === d.f);
       if (!cell) return;
       dots.push(renderDot({
-        key: `g${idx}`, cx: cell.cx, cy: cell.cy,
+        key: `g${d.s}.${d.f}`, cx: cell.cx, cy: cell.cy,
         fret: d.f, ghost: true, dotSize, openSize,
       }));
     });

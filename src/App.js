@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Gallery from './Gallery';
 import GamePageWrapper from './components/GamePageWrapper';
-import UkuleleQuest from './games/UkuleleQuest';
 
 /*
   ============================================================
@@ -28,6 +27,7 @@ const MathPracticeRoom = React.lazy(() => import('./games/MathPracticeRoom'));
 const RelativisticRacer_Arcade = React.lazy(() => import('./games/RelativisticRacer_Arcade'));
 const Enigma = React.lazy(() => import('./games/Enigma'));
 const NoteQuest = React.lazy(() => import('./games/NoteQuest'));
+const UkuleleQuest = React.lazy(() => import('./games/UkuleleQuest'));
 
 const BASE_URL = 'https://oddnoodlegames.com';
 
@@ -87,6 +87,12 @@ const PAGE_META = {
     description: 'Learn notes, chords, intervals, and key signatures through quizzes and ear training. A free, badge-filled music theory adventure for kids. No download needed!',
     genre: ['Educational', 'Music'],
     image: `${BASE_URL}/og/note-quest.png`,
+  },
+  '/ukulele-quest': {
+    title: 'Ukulele Quest | Free Classroom Ukulele Game | Odd Noodle Games',
+    description: 'A classroom ukulele game for shared tablets. Hunt notes on the fretboard, build chord shapes, and take turns in Pass & Play, Council, or GamesMaster mode. No download needed!',
+    genre: ['Educational', 'Music'],
+    image: `${BASE_URL}/og/ukulele-quest.png`,
   },
 };
 
@@ -319,9 +325,11 @@ export default function App() {
           <Route path="/note-quest" element={
             <GamePageWrapper path="/note-quest"><NoteQuest /></GamePageWrapper>
           } />
+          <Route path="/ukulele-quest" element={
+            <GamePageWrapper path="/ukulele-quest"><UkuleleQuest /></GamePageWrapper>
+          } />
           <Route path="*" element={<NotFound />} />
-                <Route path="/ukulele-quest" element={<UkuleleQuest />} />
-</Routes>
+        </Routes>
       </React.Suspense>
     </>
   );
