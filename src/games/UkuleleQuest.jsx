@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* ============================================================================
@@ -311,7 +311,7 @@ export default function UkuleleQuest() {
     });
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (screen !== "game") return;
     // Defer geometry calc to next frame so the fretboard element has real dimensions.
     const raf = requestAnimationFrame(computeGeometry);
@@ -602,7 +602,7 @@ export default function UkuleleQuest() {
 
   // ---------- RENDER ----------
   return (
-    <div className="uq-root" style={{ position: "fixed", inset: 0, background: C.cream, color: C.ink, overflow: "hidden", userSelect: "none", WebkitUserSelect: "none", touchAction: "manipulation" }}>
+    <div className="uq-root" style={{ position: "relative", width: "100%", minHeight: "100vh", background: C.cream, color: C.ink, overflow: "hidden", userSelect: "none", WebkitUserSelect: "none", touchAction: "manipulation" }}>
       {backBtn}
       {topbar}
 
@@ -619,60 +619,63 @@ export default function UkuleleQuest() {
         className={"uq-app" + (flipped ? " uq-flipped" : "")}
         style={{ position: "relative", width: "100vw", height: "100vh", zIndex: 1, transformOrigin: "center center" }}
       >
-        {/* Screens — absolutely positioned, equal top/bottom clearance for flip safety */}
-        <div style={{
-          position: "absolute",
-          top:    `calc(68px + env(safe-area-inset-top, 0px))`,
-          bottom: `calc(68px + env(safe-area-inset-bottom, 0px))`,
-          left: 0, right: 0,
-          padding: 18,
-          overflowY: "auto", overflowX: "hidden",
-          WebkitOverflowScrolling: "touch",
-          display: screen === "home" ? "block" : "none",
-        }}>
-          <HomeScreen
-            mode={mode} setMode={setMode}
-            level={level} setLevel={setLevel}
-            scoring={scoring} setScoring={setScoring}
-            players={players}
-            addPlayer={addPlayer}
-            updatePlayerName={updatePlayerName}
-            removePlayer={removePlayer}
-            onStart={startGame}
-          />
-        </div>
+        {/* Mounted conditionally so the fretboard only enters the DOM when the game
+            screen is visible — this keeps getBoundingClientRect honest on first Start. */}
+        {screen === "home" && (
+          <div style={{
+            position: "absolute",
+            top:    `calc(68px + env(safe-area-inset-top, 0px))`,
+            bottom: `calc(68px + env(safe-area-inset-bottom, 0px))`,
+            left: 0, right: 0,
+            padding: 18,
+            overflowY: "auto", overflowX: "hidden",
+            WebkitOverflowScrolling: "touch",
+          }}>
+            <HomeScreen
+              mode={mode} setMode={setMode}
+              level={level} setLevel={setLevel}
+              scoring={scoring} setScoring={setScoring}
+              players={players}
+              addPlayer={addPlayer}
+              updatePlayerName={updatePlayerName}
+              removePlayer={removePlayer}
+              onStart={startGame}
+            />
+          </div>
+        )}
 
-        <div style={{
-          position: "absolute",
-          top:    `calc(68px + env(safe-area-inset-top, 0px))`,
-          bottom: `calc(68px + env(safe-area-inset-bottom, 0px))`,
-          left: 0, right: 0,
-          padding: 18,
-          overflowY: "auto", overflowX: "hidden",
-          WebkitOverflowScrolling: "touch",
-          display: screen === "game" ? "block" : "none",
-        }}>
-          <GameScreen
-            prompt={prompt}
-            mode={mode} level={level} scoring={scoring}
-            players={players}
-            currentPlayerIdx={currentPlayerIdx}
-            teamScore={teamScore}
-            placedDots={placedDots}
-            ghostDots={ghostDots}
-            submitted={submitted}
-            fretboardRef={fretboardRef}
-            fbGeom={fbGeom}
-            fretCount={fretCount}
-            onHitboxTap={onHitboxTap}
-            onClear={() => setPlacedDots([])}
-            onSubmit={() => submitAnswer()}
-            onReveal={revealAnswer}
-            onNext={nextRound}
-            onAward={awardPoint}
-            onEnd={endGame}
-          />
-        </div>
+        {screen === "game" && (
+          <div style={{
+            position: "absolute",
+            top:    `calc(68px + env(safe-area-inset-top, 0px))`,
+            bottom: `calc(68px + env(safe-area-inset-bottom, 0px))`,
+            left: 0, right: 0,
+            padding: 18,
+            overflowY: "auto", overflowX: "hidden",
+            WebkitOverflowScrolling: "touch",
+          }}>
+            <GameScreen
+              prompt={prompt}
+              mode={mode} level={level} scoring={scoring}
+              players={players}
+              currentPlayerIdx={currentPlayerIdx}
+              teamScore={teamScore}
+              placedDots={placedDots}
+              ghostDots={ghostDots}
+              submitted={submitted}
+              fretboardRef={fretboardRef}
+              fbGeom={fbGeom}
+              fretCount={fretCount}
+              onHitboxTap={onHitboxTap}
+              onClear={() => setPlacedDots([])}
+              onSubmit={() => submitAnswer()}
+              onReveal={revealAnswer}
+              onNext={nextRound}
+              onAward={awardPoint}
+              onEnd={endGame}
+            />
+          </div>
+        )}
       </div>
 
       {/* Feedback overlay */}
