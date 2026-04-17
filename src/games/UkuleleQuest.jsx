@@ -344,12 +344,12 @@ export default function UkuleleQuest() {
     const target = choices[Math.floor(Math.random() * choices.length)];
     const answers = [];
     for (let si = 0; si < STRINGS.length; si++) {
-      for (let fi = 0; fi <= 3; fi++) {
+      for (let fi = 0; fi <= fretCount; fi++) {
         if (midiToName(midiAt(si, fi)) === target) answers.push({ s: si, f: fi });
       }
     }
     return answers.length ? { type: "note", note: target, answers } : makeNotePrompt();
-  }, []);
+  }, [fretCount]);
 
   const makeChordPrompt = useCallback(() => {
     const keys = Object.keys(CHORDS);
@@ -857,7 +857,7 @@ function HomeScreen({ mode, setMode, level, setLevel, scoring, setScoring, playe
 
       <SectionTitle>Pick a level</SectionTitle>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
-        <ChoiceCard emoji="🎯" title="Note Hunter" body="Beginner · Single tap. Find one note on the fretboard (open strings & frets 1–3)."
+        <ChoiceCard emoji="🎯" title="Note Hunter" body="Beginner · Single tap. Find one note on the fretboard (open strings & frets 1–5)."
           selected={level === "notes"} onClick={() => setLevel("notes")} />
         <ChoiceCard emoji="🎼" title="Chord Builder" body="Intermediate · Place multiple finger dots to build a chord shape, then Submit."
           selected={level === "chords"} onClick={() => setLevel("chords")} />
