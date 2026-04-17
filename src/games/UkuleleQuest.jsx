@@ -312,7 +312,7 @@ export default function UkuleleQuest() {
   }, []);
 
   useLayoutEffect(() => {
-    if (screen !== "game") return;
+    if (screen !== "game" || !prompt) return;
     // Defer geometry calc to next frame so the fretboard element has real dimensions.
     const raf = requestAnimationFrame(computeGeometry);
     const onResize = () => computeGeometry();
@@ -336,7 +336,7 @@ export default function UkuleleQuest() {
       window.removeEventListener("orientationchange", onResize);
       if (observer) observer.disconnect();
     };
-  }, [screen, computeGeometry]);
+  }, [screen, prompt, computeGeometry]);
 
   // ----- ROUND LOGIC -----
   const makeNotePrompt = useCallback(() => {
@@ -376,31 +376,34 @@ export default function UkuleleQuest() {
 
   // ----- LIFECYCLE: start / reset / end -----
   const startGame = useCallback(() => {
-    if (players.length === 0) {
-      setPlayers([{ name: "Player 1", score: 0 }]);
-    }
-    setPlayers((ps) => ps.map((p) => ({ ...p, score: 0 })));
+    const seededPlayers = players.length
+      ? players.map((p) => ({ ...p, score: 0 }))
+      : [{ name: "Player 1", score: 0 }];
+
+    const firstPrompt = level === "notes" ? makeNotePrompt() : makeChordPrompt();
+
+    setPlayers(seededPlayers);
     setTeamScore(0);
-    setRoundsPlayed(0);
+    setRoundsPlayed(1);
     setCurrentPlayerIdx(0);
+    setPlacedDots([]);
+    setSubmitted(false);
+    setGhostDots(null);
+    setFeedback(null);
+    setPrompt(firstPrompt);
     setScreen("game");
     initAudio();
-    // Seed the first round after state has committed.
-    setTimeout(() => {
-      setPlacedDots([]);
-      setSubmitted(false);
-      setGhostDots(null);
-      setFeedback(null);
-      setPrompt(level === "notes" ? makeNotePrompt() : makeChordPrompt());
-      setRoundsPlayed(1);
-    }, 0);
-  }, [players.length, level, initAudio, makeNotePrompt, makeChordPrompt]);
+  }, [players, level, initAudio, makeNotePrompt, makeChordPrompt]);
 
   const endGame = useCallback(() => { setShowResults(true); }, []);
 
   const goHome = useCallback(() => {
     setShowResults(false);
     setScreen("home");
+    setPrompt(null);
+    setPlacedDots([]);
+    setSubmitted(false);
+    setGhostDots(null);
   }, []);
 
   // ----- INTERACTION -----
