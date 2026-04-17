@@ -382,7 +382,7 @@ export default function UkuleleQuest() {
         return [...withoutSameString, { s, f }];
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [submitted, mode, level, playNote]);
 
   const dotsEqual = (a, b) => {
