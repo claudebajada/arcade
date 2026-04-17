@@ -429,7 +429,7 @@ export default function UkuleleQuest() {
       setGhostDots(prompt.type === "note" ? prompt.answers : prompt.dots);
       showFeedbackCard(false, prompt);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [submitted, prompt, placedDots, scoring, currentPlayerIdx, playStrum, playSuccess, playFail]);
 
   const revealAnswer = useCallback(() => {
@@ -443,7 +443,7 @@ export default function UkuleleQuest() {
       setGhostDots(prompt.dots);
       setTimeout(() => playStrum(prompt.dots.map((d) => midiAt(d.s, d.f))), 200);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [submitted, prompt, playNote, playStrum]);
 
   const awardPoint = useCallback(() => {
