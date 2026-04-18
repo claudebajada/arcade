@@ -95,8 +95,9 @@ export default function PrivacyPolicy() {
             The short version
           </p>
           <ul style={{ ...p, margin: 0, paddingLeft: 20 }}>
-            <li>We do not collect any personal information from you or your child</li>
-            <li>We do not use cookies or tracking of any kind</li>
+            <li>We do not use advertising trackers, third-party behavioural analytics, or profiling tools</li>
+            <li>We collect limited technical server logs to operate, secure, and monitor the service</li>
+            <li>We do not use cookies or advertising tracking of any kind</li>
             <li>We do not run ads</li>
             <li>We do not require accounts or sign-ups</li>
             <li>All games run entirely in your browser</li>
@@ -124,13 +125,19 @@ export default function PrivacyPolicy() {
         {/* Section 2 */}
         <Section title="2. Information We Collect">
           <p style={p}>
-            <strong style={{ color: '#d4c8f0' }}>We collect no personal information whatsoever.</strong>{' '}
-            No names, no email addresses, no IP addresses stored on our servers, no device
-            identifiers, no location data, and no usage analytics.
+            Our web server (Caddy) records standard access logs as a normal part of operating the
+            service. Each log entry may include: IP address, requested URL, timestamp, HTTP method,
+            response status code, browser user agent, and referrer. We use these logs to maintain
+            security, troubleshoot problems, and generate basic aggregate traffic statistics using a
+            self-hosted analytics tool (GoAccess). No third-party analytics services receive this
+            data.
           </p>
           <p style={p}>
-            Our server receives standard HTTP request logs (as all web servers do), but we do not
-            store, analyse, or share these logs. No personal data is retained.
+            We do not use server logs to identify individual users, build profiles, or serve
+            advertising. Our lawful basis for this processing is our{' '}
+            <strong style={{ color: '#d4c8f0' }}>legitimate interests</strong> (GDPR Art. 6(1)(f))
+            in operating, securing, and improving the service. We do not use analytics cookies for
+            this server-side analytics.
           </p>
         </Section>
 
@@ -190,10 +197,12 @@ export default function PrivacyPolicy() {
           <p style={p}>
             <strong style={{ color: '#d4c8f0' }}>United States (COPPA):</strong> We comply with
             the Children's Online Privacy Protection Act. We do not knowingly collect personal
-            information from children under 13. We do not require children to disclose any personal
-            information to use any game on this site. There are no accounts, no chat features, and
-            no user-generated content transmitted to any server. If you believe a child has
-            accidentally provided personal information to us, please contact us at{' '}
+            information from children under 13 beyond the standard server logs described in Section
+            2, which are not used to identify or contact individuals. We do not require children to
+            disclose any personal information to use any game on this site. There are no accounts,
+            no chat features, and no user-generated content transmitted to any server. If you
+            believe a child has accidentally provided personal information to us, please contact us
+            at{' '}
             <a href="mailto:privacy@oddnoodlegames.com" style={{ color: '#ffe066' }}>
               privacy@oddnoodlegames.com
             </a>{' '}
@@ -202,10 +211,11 @@ export default function PrivacyPolicy() {
           <p style={p}>
             <strong style={{ color: '#d4c8f0' }}>European Economic Area (GDPR Art. 8 / GDPR-K):</strong>{' '}
             The GDPR requires parental consent before processing personal data of children under 16
-            (or under 13 in some member states). Because we collect no personal data from anyone —
-            children or adults — parental consent is not required for use of this site. The only
-            incidental data exposure is the Google Fonts IP address described in Section 4, which
-            is not data we control or retain.
+            (or under 13 in some member states). Because we do not intentionally collect personal
+            data from children, and any server log data is used only for the aggregate operational
+            purposes described in Section 2, parental consent is not required for use of this site.
+            The only other incidental data exposure is the Google Fonts IP address described in
+            Section 4, which is not data we control or retain.
           </p>
         </Section>
 
@@ -217,9 +227,15 @@ export default function PrivacyPolicy() {
             to processing.
           </p>
           <p style={p}>
-            Because we store no personal data, there is nothing for us to provide, correct, or
-            delete. If you have concerns about the Google Fonts data described in Section 4, those
-            rights can be exercised directly through Google's privacy controls at{' '}
+            Server logs described in Section 2 may contain your IP address. If you wish to exercise
+            your rights in relation to this data (access, erasure, objection, etc.), please contact
+            us at{' '}
+            <a href="mailto:privacy@oddnoodlegames.com" style={{ color: '#ffe066' }}>
+              privacy@oddnoodlegames.com
+            </a>. In practice, individual log entries are difficult to isolate by identity, but we
+            will make reasonable efforts to locate and delete entries associated with a specific IP
+            address upon request. For concerns about the Google Fonts data described in Section 4,
+            those rights can be exercised directly through Google's privacy controls at{' '}
             <a
               href="https://myaccount.google.com/data-and-privacy"
               target="_blank"
@@ -238,9 +254,10 @@ export default function PrivacyPolicy() {
         {/* Section 7 */}
         <Section title="7. Data Retention">
           <p style={p}>
-            Since we collect no personal data, there is nothing to retain or delete. Temporary
-            in-browser game state is held only in your browser's memory and is not transmitted to
-            us.
+            Raw server logs are retained for 90 days and then deleted. Aggregate traffic statistics
+            generated from those logs contain no individual user data and may be kept for longer.
+            Temporary in-browser game state is held only in your browser's memory and is never
+            transmitted to us.
           </p>
         </Section>
 
