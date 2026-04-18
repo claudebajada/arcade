@@ -2,6 +2,10 @@
 
 Kid-friendly browser games, live at **[oddnoodlegames.com](https://oddnoodlegames.com)** — served from a single Docker container.
 
+This repository contains the code for the official Odd Noodle Games website and browser games.
+
+> Public repository, but **not open source**. See the `COPYRIGHT` file for usage restrictions.
+
 ## Games
 
 | Game | Tags |
@@ -22,8 +26,9 @@ Kid-friendly browser games, live at **[oddnoodlegames.com](https://oddnoodlegame
 
 ```bash
 docker compose up --build -d
-open http://localhost:8080
 ```
+
+Then visit http://localhost:8080
 
 ## Project Structure
 
@@ -78,7 +83,15 @@ See `GAME_GUIDE.md` for the full guide. The short version:
 
 ## Deployment
 
-The site runs on a VM behind a reverse proxy with HTTPS. To deploy from scratch:
+The site runs in Docker and is served behind a reverse proxy with HTTPS.
+
+In production, Caddy is used in front of the container to handle domain routing and TLS.
+
+```bash
+sudo caddy reverse-proxy --from oddnoodlegames.com --to localhost:8080
+```
+
+To deploy from scratch:
 
 ```bash
 # Copy project to VM
