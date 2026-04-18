@@ -30,6 +30,7 @@ const NoteQuest = React.lazy(() => import('./games/NoteQuest'));
 const UkuleleQuest = React.lazy(() => import('./games/UkuleleQuest'));
 const About = React.lazy(() => import('./About'));
 const PrivacyPolicy = React.lazy(() => import('./PrivacyPolicy'));
+const TermsOfUse = React.lazy(() => import('./TermsOfUse'));
 
 const BASE_URL = 'https://oddnoodlegames.com';
 
@@ -105,6 +106,12 @@ const PAGE_META = {
   '/privacy': {
     title: 'Privacy Policy | Odd Noodle Games',
     description: 'Privacy policy for Odd Noodle Games. We collect no personal data, use no cookies, and comply with COPPA and GDPR. Safe for children.',
+    image: `${BASE_URL}/og/default.png`,
+    skipSchema: true,
+  },
+  '/terms': {
+    title: 'Terms of Use | Odd Noodle Games',
+    description: 'Terms of Use for Odd Noodle Games. Personal, family, and classroom play is welcome. Commercial use, copying, or redistribution is not permitted.',
     image: `${BASE_URL}/og/default.png`,
     skipSchema: true,
   },
@@ -353,6 +360,7 @@ export default function App() {
           } />
           <Route path="/about"   element={<About />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfUse />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </React.Suspense>
