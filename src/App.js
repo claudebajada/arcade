@@ -28,6 +28,8 @@ const RelativisticRacer_Arcade = React.lazy(() => import('./games/RelativisticRa
 const Enigma = React.lazy(() => import('./games/Enigma'));
 const NoteQuest = React.lazy(() => import('./games/NoteQuest'));
 const UkuleleQuest = React.lazy(() => import('./games/UkuleleQuest'));
+const About = React.lazy(() => import('./About'));
+const PrivacyPolicy = React.lazy(() => import('./PrivacyPolicy'));
 
 const BASE_URL = 'https://oddnoodlegames.com';
 
@@ -93,6 +95,18 @@ const PAGE_META = {
     description: 'A classroom ukulele game for shared tablets. Hunt notes on the fretboard, build chord shapes, and take turns in Pass & Play, Council, or GamesMaster mode. No download needed!',
     genre: ['Educational', 'Music'],
     image: `${BASE_URL}/og/ukulele-quest.png`,
+  },
+  '/about': {
+    title: 'About Odd Noodle Games | Free Browser Games for Kids',
+    description: 'Odd Noodle Games makes free, quirky browser games for kids. Every game teaches something — maths, science, geography, music, history, and coding. No accounts, no ads, no download.',
+    image: `${BASE_URL}/og/default.png`,
+    skipSchema: true,
+  },
+  '/privacy': {
+    title: 'Privacy Policy | Odd Noodle Games',
+    description: 'Privacy policy for Odd Noodle Games. We collect no personal data, use no cookies, and comply with COPPA and GDPR. Safe for children.',
+    image: `${BASE_URL}/og/default.png`,
+    skipSchema: true,
   },
 };
 
@@ -205,7 +219,7 @@ function RouteEffects() {
     }
 
     // ── JSON-LD: per-game VideoGame + WebApplication schema ───────
-    if (meta) {
+    if (meta && !meta.skipSchema) {
       upsertJsonLd('game-schema', {
         '@context': 'https://schema.org',
         '@type': ['VideoGame', 'WebApplication'],
@@ -337,6 +351,8 @@ export default function App() {
           <Route path="/ukulele-quest" element={
             <GamePageWrapper path="/ukulele-quest"><UkuleleQuest /></GamePageWrapper>
           } />
+          <Route path="/about"   element={<About />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </React.Suspense>

@@ -250,6 +250,34 @@ function RelatedGameCard({ game }) {
   );
 }
 
+function FooterLink({ link }) {
+  const navigate = useNavigate();
+  const [hovered, setHovered] = React.useState(false);
+  return (
+    <a
+      href={link.href || link.path}
+      onClick={link.path ? (e) => { e.preventDefault(); navigate(link.path); } : undefined}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        color: hovered ? '#ffe066' : '#5a3a8a',
+        fontSize: 12, fontWeight: 700,
+        letterSpacing: 1, textDecoration: 'none',
+        cursor: 'pointer', transition: 'color 0.2s',
+      }}
+    >
+      {link.label}
+    </a>
+  );
+}
+
+const FOOTER_LINKS = [
+  { label: 'Home', path: '/' },
+  { label: 'About', path: '/about' },
+  { label: 'Privacy Policy', path: '/privacy' },
+  { label: 'Contact', href: 'mailto:hello@oddnoodlegames.com' },
+];
+
 /*
   GamePageWrapper
   ───────────────
@@ -315,6 +343,21 @@ export default function GamePageWrapper({ path, children }) {
                 ))}
               </div>
             </nav>
+
+            {/* Site footer links */}
+            <div style={{
+              marginTop: 48,
+              paddingTop: 24,
+              borderTop: '1px solid #1a0a35',
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 24,
+              flexWrap: 'wrap',
+            }}>
+              {FOOTER_LINKS.map(link => (
+                <FooterLink key={link.label} link={link} />
+              ))}
+            </div>
 
           </div>
         </section>

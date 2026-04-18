@@ -155,6 +155,7 @@ export default function Gallery() {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
   const [hovered, setHovered] = useState(null);
+  const [hoveredFooterLink, setHoveredFooterLink] = useState(null);
   const animRef = useRef(null);
   const timeRef = useRef(0);
   const [darkMode, setDarkMode] = useState(true);
@@ -758,12 +759,37 @@ export default function Gallery() {
         </div>
 
         {/* ── Footer ── */}
-        <div style={{
-          textAlign: 'center', marginTop: 64,
-          color: footerClr, fontSize: 13, fontWeight: 700, letterSpacing: 1,
-        }}>
-          Odd Noodle Games — play, learn, be weird 🍜
-        </div>
+        <footer style={{ textAlign: 'center', marginTop: 64 }}>
+          <div style={{ color: footerClr, fontSize: 13, fontWeight: 700, letterSpacing: 1, marginBottom: 14 }}>
+            Odd Noodle Games — play, learn, be weird 🍜
+          </div>
+          <nav aria-label="Site links" style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 10 }}>
+            {[
+              { label: 'About', path: '/about' },
+              { label: 'Privacy Policy', path: '/privacy' },
+              { label: 'Contact', href: 'mailto:hello@oddnoodlegames.com' },
+            ].map(link => (
+              <a
+                key={link.label}
+                href={link.href || link.path}
+                onClick={link.path ? (e) => { e.preventDefault(); navigate(link.path); } : undefined}
+                onMouseEnter={() => setHoveredFooterLink(link.label)}
+                onMouseLeave={() => setHoveredFooterLink(null)}
+                style={{
+                  color: hoveredFooterLink === link.label ? '#ffe066' : footerClr,
+                  fontSize: 12, fontWeight: 700, letterSpacing: 1,
+                  textDecoration: hoveredFooterLink === link.label ? 'underline' : 'none',
+                  cursor: 'pointer', transition: 'color 0.2s',
+                }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+          <div style={{ color: footerClr, fontSize: 11, opacity: 0.6 }}>
+            © 2026 Odd Noodle Games. All rights reserved.
+          </div>
+        </footer>
       </div>
     </div>
   );
