@@ -21,10 +21,25 @@ function makeBubbles(answer, cw) {
     if (c !== answer) wrongs.add(c);
   }
   const vals = [answer, ...[...wrongs]].sort(() => Math.random() - 0.5);
-  const xs = [cw * 0.14, cw * 0.38, cw * 0.62, cw * 0.86];
+
+  // Randomize X positions with minimum 80px gap
+  const xs = [];
+  let xTries = 0;
+  while (xs.length < 4 && xTries < 500) {
+    xTries++;
+    const x = 40 + Math.random() * (cw - 80);
+    if (xs.every(ex => Math.abs(ex - x) >= 80)) xs.push(x);
+  }
+  if (xs.length < 4) {
+    xs.length = 0;
+    [0.14, 0.38, 0.62, 0.86].forEach(p => xs.push(cw * p));
+  }
+
   return vals.map((val, i) => ({
     x: xs[i],
     y: -55 - i * 65,
+    vx: (Math.random() * 2 - 1) * 35,
+    speedMult: 0.8 + Math.random() * 0.4,
     val,
     correct: val === answer,
     r: 30,
@@ -100,6 +115,10 @@ export default function TimesTableBlaster() {
       paused: false,
       pauseTimer: 0,
       keys: {},
+      distractors: [],
+      distractorTimer: 0,
+      distractorInterval: 3.5,
+      floatingTexts: [],
       stars: Array.from({ length: 50 }, () => ({
         x: Math.random(),
         y: Math.random() * 0.72,
@@ -157,7 +176,10 @@ export default function TimesTableBlaster() {
       for (const bub of gs.bubbles) {
         if (bub.flash > 0) bub.flash = Math.max(0, bub.flash - dt);
         if (!bub.alive) continue;
-        bub.y += gs.bubbleSpeed * dt;
+        bub.y += gs.bubbleSpeed * (bub.speedMult ?? 1) * dt;
+        bub.x += bub.vx * dt;
+        if (bub.x - bub.r < 0)  { bub.x = bub.r;     bub.vx = Math.abs(bub.vx); }
+        if (bub.x + bub.r > W)  { bub.x = W - bub.r; bub.vx = -Math.abs(bub.vx); }
 
         if (bub.y - bub.r > H - 50) {
           bub.alive = false;
@@ -229,6 +251,57 @@ export default function TimesTableBlaster() {
               gs.pauseTimer = 0.7;
             }
             break outer;
+          }
+        }
+      }
+      // Distractor (asteroid) spawn
+      gs.distractorTimer -= dt;
+      if (gs.distractorTimer <= 0) {
+        const fromLeft = Math.random() < 0.5;
+        gs.distractors.push({
+          x: fromLeft ? -20 : W + 20,
+          y: 70 + Math.random() * (H * 0.5),
+          vx: fromLeft ? (60 + Math.random() * 50) : -(60 + Math.random() * 50),
+          vy: 15 + Math.random() * 25,
+          r: 14,
+          alive: true,
+          flash: 0,
+          rotation: 0,
+          rotSpeed: (Math.random() - 0.5) * 4,
+        });
+        gs.distractorTimer = Math.max(1.5, gs.distractorInterval - (gs.level - 1) * 0.2);
+      }
+
+      // Update distractors
+      for (const d of gs.distractors) {
+        if (d.flash > 0) d.flash = Math.max(0, d.flash - dt);
+        if (!d.alive) continue;
+        d.x += d.vx * dt;
+        d.y += d.vy * dt;
+        d.rotation += d.rotSpeed * dt;
+      }
+      gs.distractors = gs.distractors.filter(d =>
+        (d.alive || d.flash > 0) && !(d.x < -60 || d.x > W + 60 || d.y > H + 60)
+      );
+
+      // Update floating texts
+      for (const ft of gs.floatingTexts) { ft.y -= 40 * dt; ft.life -= dt; }
+      gs.floatingTexts = gs.floatingTexts.filter(ft => ft.life > 0);
+
+      // Bullet–distractor collisions
+      for (const b of gs.bullets) {
+        if (!b.alive) continue;
+        for (const d of gs.distractors) {
+          if (!d.alive) continue;
+          const ddx = b.x - d.x, ddy = b.y - d.y;
+          if (ddx * ddx + ddy * ddy < (d.r + 5) * (d.r + 5)) {
+            b.alive = false;
+            d.alive = false;
+            d.flash = 0.4;
+            gs.score += 5;
+            gs.floatingTexts.push({ x: d.x, y: d.y - 10, text: "+5", life: 0.8 });
+            tone(660, 0.08, "triangle", 0.15);
+            break;
           }
         }
       }
@@ -327,6 +400,50 @@ export default function TimesTableBlaster() {
       ctx.fillStyle = flashing ? bub.flashCol : "#e2e8f0";
       ctx.fillText(numStr, bub.x, bub.y);
       ctx.textBaseline = "alphabetic";
+      ctx.globalAlpha = 1;
+    }
+
+    // Distractors (asteroids)
+    for (const d of gs.distractors) {
+      const alpha = d.alive ? 1 : d.flash / 0.4;
+      if (alpha <= 0) continue;
+      ctx.globalAlpha = alpha;
+      ctx.save();
+      ctx.translate(d.x, d.y);
+      ctx.rotate(d.rotation);
+      const flashing = !d.alive && d.flash > 0;
+      ctx.shadowColor = flashing ? "#f97316" : "#94a3b8";
+      ctx.shadowBlur = flashing ? 18 : 5;
+      ctx.beginPath();
+      const numPts = 7;
+      for (let pi = 0; pi < numPts; pi++) {
+        const ang = (pi / numPts) * Math.PI * 2;
+        const dist = d.r * (0.7 + 0.3 * Math.sin(pi * 2.3));
+        pi === 0 ? ctx.moveTo(Math.cos(ang) * dist, Math.sin(ang) * dist)
+                 : ctx.lineTo(Math.cos(ang) * dist, Math.sin(ang) * dist);
+      }
+      ctx.closePath();
+      ctx.fillStyle = flashing ? "#f97316" : "#6b7280";
+      ctx.fill();
+      ctx.strokeStyle = flashing ? "#fed7aa" : "#9ca3af";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
+    // Floating bonus texts
+    for (const ft of gs.floatingTexts) {
+      ctx.globalAlpha = Math.min(1, ft.life / 0.4);
+      ctx.font = `9px ${FONT}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.shadowColor = "#f97316";
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = "#fed7aa";
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.shadowBlur = 0;
       ctx.globalAlpha = 1;
     }
 
@@ -505,7 +622,8 @@ export default function TimesTableBlaster() {
         <div style={{ marginTop: 28, fontSize: 7, color: "#475569", lineHeight: 2.2, textAlign: "center" }}>
           ← → MOVE &nbsp;|&nbsp; SPACE / ▲ FIRE<br />
           Shoot the correct answer bubble!<br />
-          Wrong shot or missed = lose a life
+          Wrong shot or missed = lose a life<br />
+          <span style={{ color: "#f97316" }}>Shoot asteroids for +5 bonus!</span>
         </div>
       </div>
     );
