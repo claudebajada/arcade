@@ -6,7 +6,7 @@
 - [x] Add a Contact page or contact email
 - [x] Publish a Privacy Policy
 - [x] Publish Terms of Service
-- [ ] Add a clear Home button on every game page
+- [x] Add a clear Home button on every game page
 - [ ] Add a visible site-wide navigation/menu
 - [ ] Check that all broken or placeholder routes are fixed
 - [ ] Add basic accessibility support across the site

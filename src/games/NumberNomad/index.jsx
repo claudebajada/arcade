@@ -825,7 +825,7 @@ export default function NumberNomad() {
   if (screen === "menu") {
     return (
       <div style={{ minHeight: "100vh", background: "#faf8f0", backgroundImage: "linear-gradient(#d4e4f7 1px, transparent 1px), linear-gradient(90deg, #d4e4f7 1px, transparent 1px)", backgroundSize: "25px 25px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "'Patrick Hand', 'Courier New', monospace", overflow: "hidden", position: "relative" }}>
-        <div onClick={() => navigate("/")} style={{ position: "absolute", top: 12, left: 16, color: "#fff", fontSize: 13, cursor: "pointer", zIndex: 10, padding: "8px 14px", borderRadius: 20, background: "rgba(0,0,0,0.4)", border: "2px solid rgba(255,255,255,0.3)", fontFamily: "'Nunito','Baloo 2',sans-serif", fontWeight: 700, userSelect: "none" }}>← ODD NOODLE</div>
+        <div onClick={() => navigate("/")} style={{ position: "absolute", top: 12, left: 16, color: "#fff", fontSize: 13, cursor: "pointer", zIndex: 10, padding: "8px 14px", borderRadius: 20, background: "rgba(0,0,0,0.4)", border: "2px solid rgba(255,255,255,0.3)", fontFamily: "'Nunito','Baloo 2',sans-serif", fontWeight: 700, userSelect: "none" }}>← ARCADE</div>
         <div style={{ position: "absolute", left: 80, top: 0, bottom: 0, width: 2, background: "#e8a0a0" }} />
         <div style={{ position: "relative", marginBottom: 16 }}>
           <h1 style={{ fontSize: "clamp(40px, 8vw, 68px)", color: "#2d3748", margin: 0, fontFamily: "'Patrick Hand', cursive", transform: "rotate(-2deg)", textShadow: "3px 3px 0 rgba(0,0,0,0.06)", lineHeight: 1 }}>NUMBER</h1>
@@ -862,7 +862,7 @@ export default function NumberNomad() {
   if (screen === "gameover") {
     return (
       <div style={{ minHeight: "100vh", background: "#faf8f0", backgroundImage: "linear-gradient(#d4e4f7 1px, transparent 1px), linear-gradient(90deg, #d4e4f7 1px, transparent 1px)", backgroundSize: "25px 25px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "'Patrick Hand', 'Courier New', monospace", position: "relative" }}>
-        <div onClick={() => navigate("/")} style={{ position: "absolute", top: 12, left: 16, color: "#fff", fontSize: 13, cursor: "pointer", zIndex: 10, padding: "8px 14px", borderRadius: 20, background: "rgba(0,0,0,0.4)", border: "2px solid rgba(255,255,255,0.3)", fontFamily: "'Nunito','Baloo 2',sans-serif", fontWeight: 700, userSelect: "none" }}>← ODD NOODLE</div>
+        <div onClick={() => navigate("/")} style={{ position: "absolute", top: 12, left: 16, color: "#fff", fontSize: 13, cursor: "pointer", zIndex: 10, padding: "8px 14px", borderRadius: 20, background: "rgba(0,0,0,0.4)", border: "2px solid rgba(255,255,255,0.3)", fontFamily: "'Nunito','Baloo 2',sans-serif", fontWeight: 700, userSelect: "none" }}>← ARCADE</div>
         <div style={{ position: "absolute", left: 80, top: 0, bottom: 0, width: 2, background: "#e8a0a0" }} />
         <div style={{ width: 56, height: 56, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "linear-gradient(135deg, #a0aec0, #718096)", margin: "0 0 16px", position: "relative", opacity: 0.5 }}>
           <div style={{ position: "absolute", left: 14, top: 20, width: 8, height: 3, background: "#2d3748", borderRadius: 2 }} />
