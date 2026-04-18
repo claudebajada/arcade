@@ -275,6 +275,7 @@ const FOOTER_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'About', path: '/about' },
   { label: 'Privacy Policy', path: '/privacy' },
+  { label: 'Terms of Use', path: '/terms' },
   { label: 'Contact', href: 'mailto:hello@oddnoodlegames.com' },
 ];
 
@@ -357,6 +358,15 @@ export default function GamePageWrapper({ path, children }) {
               {FOOTER_LINKS.map(link => (
                 <FooterLink key={link.label} link={link} />
               ))}
+            </div>
+            <div style={{
+              marginTop: 16,
+              textAlign: 'center',
+              color: '#4a3a6a',
+              fontSize: 11,
+              opacity: 0.6,
+            }}>
+              © 2026 Odd Noodle Games. All rights reserved.
             </div>
 
           </div>

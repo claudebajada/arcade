@@ -767,6 +767,7 @@ export default function Gallery() {
             {[
               { label: 'About', path: '/about' },
               { label: 'Privacy Policy', path: '/privacy' },
+              { label: 'Terms of Use', path: '/terms' },
               { label: 'Contact', href: 'mailto:hello@oddnoodlegames.com' },
             ].map(link => (
               <a
