@@ -1,54 +1,63 @@
-# 🎮 Game Arcade
+# Odd Noodle Games
 
-A self-hosted collection of web games, served from a single Docker container.
+Kid-friendly browser games, live at **[oddnoodlegames.com](https://oddnoodlegames.com)** — served from a single Docker container.
+
+## Games
+
+| Game | Tags |
+|------|------|
+| 🎸 Ukulele Quest | educational, music |
+| 🎶 Note Quest | educational, music |
+| 🔐 Enigma | puzzle, history, educational |
+| 🚀 Relativistic Racer | arcade, science |
+| 🎯 Math Practice Room | educational, maths |
+| 🐟 Fish for Fruit | arcade, action, weird |
+| ✏️ Number Nomad | platformer, maths, educational |
+| 🏛️ Embassy of Oddballs | strategy, geography, educational |
+| 🌌 Gravity Lab | strategy, science, puzzle |
+| 🐛 Debug Dynasty | arcade, coding |
+| 💥 Times Table Blaster | arcade, maths, educational |
 
 ## Quick Start
 
 ```bash
-# Build and run
 docker compose up --build -d
-
-# Open in browser
 open http://localhost:8080
 ```
-
-That's it. The site is now running on port 8080.
 
 ## Project Structure
 
 ```
-game-arcade/
+arcade/
 ├── Dockerfile              # Multi-stage: node build → nginx serve
-├── docker-compose.yml      # One-command deployment
+├── docker-compose.yml
 ├── nginx/
 │   └── default.conf        # SPA routing + caching + gzip
 ├── public/
 │   └── index.html
 └── src/
-    ├── index.js            # Entry point
-    ├── App.js              # Router (add game routes here)
-    ├── Gallery.jsx         # Landing page with game cards
+    ├── App.js              # Router — add game routes here
+    ├── Gallery.jsx         # Landing page (GAMES array + animated canvas)
     └── games/
-        └── FishForFruit/     # Each game has its own folder
-            └── index.jsx     # Game component (entry point)
+        └── GameName/
+            └── index.jsx   # One folder per game; inline styles only
 ```
 
 ## Adding a New Game
 
-1. **Create the game folder and component** at `src/games/YourGame/index.jsx`
-   - Export a default React component
-   - Import `useNavigate` from `react-router-dom` for the back button
+See `GAME_GUIDE.md` for the full guide. The short version:
+
+1. **Create** `src/games/YourGame/index.jsx` — default-export a React component, inline styles only.
 
 2. **Register the route** in `src/App.js`:
    ```jsx
    const YourGame = React.lazy(() => import('./games/YourGame'));
-   // Inside <Routes>:
    <Route path="/your-game" element={
      <GamePageWrapper path="/your-game"><YourGame /></GamePageWrapper>
    } />
    ```
 
-3. **Add a gallery card** in `src/Gallery.jsx` — add to the `GAMES` array:
+3. **Add a card** to the `GAMES` array in `src/Gallery.jsx`:
    ```js
    {
      id: 'your-game',
@@ -62,57 +71,39 @@ game-arcade/
    }
    ```
 
-4. **Rebuild and deploy**:
+4. **Rebuild**:
    ```bash
    docker compose up --build -d
    ```
 
-## Deploying to a VM
+## Deployment
+
+The site runs on a VM behind a reverse proxy with HTTPS. To deploy from scratch:
 
 ```bash
-# Copy the project to your VM
-scp -r game-arcade/ user@your-vm:/home/user/game-arcade
+# Copy project to VM
+scp -r arcade/ user@your-vm:/home/user/arcade
 
 # SSH in and run
 ssh user@your-vm
-cd game-arcade
+cd arcade
 docker compose up --build -d
 ```
-
-### With a domain name (optional)
-
-Put a reverse proxy (Caddy is easiest) in front:
-
-```bash
-# Install Caddy on the VM, then:
-sudo caddy reverse-proxy --from yourdomain.com --to localhost:8080
-```
-
-Or add a Caddy service to docker-compose.yml for automatic HTTPS.
 
 ## Useful Commands
 
 ```bash
-# Start
-docker compose up -d
-
-# Rebuild after adding a game
-docker compose up --build -d
-
-# View logs
-docker compose logs -f
-
-# Stop
-docker compose down
-
-# Check container size (typically ~25MB)
-docker images game-arcade-game-arcade
+docker compose up -d          # Start
+docker compose up --build -d  # Rebuild after changes
+docker compose logs -f        # Stream logs
+docker compose down           # Stop
+docker images arcade-arcade   # Check image size (~25 MB)
 ```
 
 ## Technical Details
 
-- **Build stage**: Node 20 Alpine compiles the React app
-- **Serve stage**: nginx Alpine serves the static build (~25MB total image)
-- **Routing**: nginx `try_files` handles SPA client-side routing
+- **Build**: Node 20 Alpine compiles the React app
+- **Serve**: nginx Alpine serves the static build (~25 MB total image)
+- **Routing**: `try_files` handles SPA client-side routing
 - **Caching**: Static assets cached for 1 year with immutable headers
-- **Compression**: Gzip enabled for all text-based assets
+- **Compression**: Gzip enabled for all text assets
