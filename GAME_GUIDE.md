@@ -6,9 +6,11 @@ How to create games that work with the Game Arcade container.
 
 ## The Golden Rule
 
-**Each game is a single React component file** (`.jsx`) dropped into `src/games/`.
+**Each game lives in its own folder** inside `src/games/`.
 
-That's it. One file per game. No separate CSS files, no separate JS files, no asset folders. Everything lives inside the component.
+The folder must contain `index.jsx` — a React component with `export default function GameName()`. That is the only required file. You may add sibling files (`constants.js`, `utils.js`, `components/`) as the game grows, but they are optional.
+
+No CSS files anywhere in the folder. No TypeScript. All styles remain inline `style={{}}`.
 
 ---
 
@@ -127,7 +129,7 @@ useEffect(() => {
 | External API calls | Container has no backend | Keep games fully client-side |
 | TypeScript `.tsx` | Project is plain JS | Use `.jsx` |
 | Tailwind / CSS-in-JS libs | Not installed | Inline styles |
-| Multiple component files | Keep it simple | One file, helper functions inside |
+| Files outside the game folder | Keep all game code in `src/games/GameName/` | Use `./constants.js`, `./utils.js` siblings |
 
 ---
 
@@ -206,7 +208,7 @@ useEffect(() => {
 ```
 
 ### Touch (mobile support)
-Always add touch controls if your game uses keyboard input. A virtual joystick for movement + action buttons works well. See FishForFruit.jsx for a full implementation.
+Always add touch controls if your game uses keyboard input. A virtual joystick for movement + action buttons works well. See `FishForFruit/index.jsx` for a full implementation.
 
 ### Mouse / Click
 ```jsx
@@ -225,17 +227,20 @@ Always add touch controls if your game uses keyboard input. A virtual joystick f
 
 ## Adding Your Game to the Arcade
 
-### Step 1: Drop the file in
+### Step 1: Create the game folder
 ```
-src/games/YourGame.jsx
+src/games/YourGame/index.jsx
 ```
+Create the folder `src/games/YourGame/` and put your component in `index.jsx`. The `React.lazy` import in `App.js` (`import('./games/YourGame')`) automatically resolves to this file via webpack module resolution.
 
 ### Step 2: Add the route in `src/App.js`
 ```jsx
-import YourGame from './games/YourGame';
+const YourGame = React.lazy(() => import('./games/YourGame'));
 
 // Inside <Routes>:
-<Route path="/your-game" element={<YourGame />} />
+<Route path="/your-game" element={
+  <GamePageWrapper path="/your-game"><YourGame /></GamePageWrapper>
+} />
 ```
 
 ### Step 3: Add the gallery card in `src/Gallery.jsx`
@@ -264,9 +269,9 @@ docker compose up --build -d
 
 When asking Claude (or any AI) to generate a game for this arcade, use a prompt like:
 
-> Create a [game type] game as a single React component (.jsx file).
+> Create a [game type] game for the Odd Noodle Games arcade. Place it in `src/games/YourGameName/index.jsx`.
 > Requirements:
-> - Single file, default export, all inline styles
+> - Folder-based entry point (`index.jsx`), default export, all inline styles
 > - Uses HTML5 Canvas for rendering (or React DOM for board games)
 > - Includes keyboard controls AND touch controls for mobile
 > - Import React hooks from "react" and useNavigate from "react-router-dom"
@@ -278,7 +283,7 @@ When asking Claude (or any AI) to generate a game for this arcade, use a prompt 
 
 ## Checklist Before Adding a Game
 
-- [ ] Single `.jsx` file
+- [ ] Game lives in `src/games/GameName/index.jsx`
 - [ ] `export default function GameName()`
 - [ ] Imports only `react` and `react-router-dom`
 - [ ] Has `← ARCADE` back button using `useNavigate`

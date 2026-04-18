@@ -14,7 +14,7 @@ Not every request is "build a new game." Identify the category before proceeding
 | New game | Create, add, or build a game | GAME_GUIDE.md | Adding a New Game |
 | Documentation update | Edit AGENTS.md, CLAUDE.md, GAME_GUIDE.md, README.md, or in-code comments | The specific doc file | — (edit in place) |
 | To-do / Roadmap | Capture tasks, a feature wishlist, or a roadmap | TODO.md (create if absent) | — |
-| Bug fix / Refactoring | Fix a bug or improve existing code | src/games/[Game].jsx | Coding Standards |
+| Bug fix / Refactoring | Fix a bug or improve existing code | src/games/[Game]/index.jsx | Coding Standards |
 | Infrastructure | Docker, nginx, deployment, or environment changes | Dockerfile, docker-compose.yml, nginx/default.conf | README.md |
 | SEO / Metadata | SEO, OG images, sitemap, or meta-description updates | public/index.html, public/sitemap.xml, src/App.js, src/components/GamePageWrapper.jsx | Adding a New Game §2 §4 §6 |
 
@@ -44,17 +44,18 @@ For any category other than "New game," do not follow the seven-step game workfl
 - `src/App.js`: route registry and `PAGE_META` SEO config — add entries here for every new game
 - `src/Gallery.jsx`: landing page; game cards driven by `export const GAMES`
 - `src/components/GamePageWrapper.jsx`: wraps every game route with SEO content + Related Games
-- `src/games/*.jsx`: one self-contained file per game:
-  - `FishForFruit.jsx` — canvas action/arcade
-  - `NumberNomad.jsx` — canvas math platformer
-  - `EmbassyOfOddballs.jsx` — React DOM geography strategy
-  - `GravityLab.jsx` — canvas space physics puzzle
-  - `DebugDynasty.jsx` — canvas arcade coding game
-  - `MathPracticeRoom.jsx` — React DOM maths practice
-  - `RelativisticRacer_Arcade.jsx` — canvas science arcade
-  - `Enigma.jsx` — React DOM cipher/history puzzle
-  - `NoteQuest.jsx` — React DOM music theory quiz
-  - `UkuleleQuest.jsx` — React DOM classroom ukulele game
+- `src/games/*/`: one folder per game, entry point is `index.jsx`:
+  - `FishForFruit/` — canvas action/arcade
+  - `NumberNomad/` — canvas math platformer
+  - `EmbassyOfOddballs/` — React DOM geography strategy
+  - `GravityLab/` — canvas space physics puzzle
+  - `DebugDynasty/` — canvas arcade coding game
+  - `MathPracticeRoom/` — React DOM maths practice
+  - `RelativisticRacer_Arcade/` — canvas science arcade
+  - `Enigma/` — React DOM cipher/history puzzle
+  - `NoteQuest/` — React DOM music theory quiz
+  - `UkuleleQuest/` — React DOM classroom ukulele game
+  - Each folder's `index.jsx` is the required entry point. Optional additions within the folder: `constants.js`, `utils.js`, `components/` — all imported relatively.
 - `GAME_GUIDE.md`: game-building reference patterns
 - `README.md`: deployment/infrastructure details
 
@@ -65,9 +66,10 @@ For any category other than "New game," do not follow the seven-step game workfl
 4. Each game in `src/games/` is standalone and includes a back button to `/`.
 
 ## Coding Standards
-- Single game file per game: `src/games/GameName.jsx`
-- Export pattern: `export default function GameName()`
-- Inline styles only: `style={{}}`
+- One folder per game: `src/games/GameName/` with `index.jsx` as the entry point
+- `index.jsx` may import sibling files (`./constants`, `./utils`, `./components/Widget`) within the same folder
+- Export pattern: `export default function GameName()` in `index.jsx`
+- Inline styles only: `style={{}}` — no `.css` files anywhere in the folder
 - No TypeScript, no external CSS, no image imports, no server-side game code
 - Keep games client-side; avoid external API dependencies
 - Clean up listeners/animation frames in `useEffect` cleanup
@@ -140,7 +142,7 @@ For any category other than "New game," do not follow the seven-step game workfl
 | `import image from "./pic.png"` | Canvas drawing, emoji, inline SVG, or data URI |
 | TypeScript / `.tsx` | Plain `.jsx` |
 | Tailwind, styled-components, CSS-in-JS libs | Inline styles |
-| Multiple component files per game | Helper functions inside the single `.jsx` file |
+| Files outside the game's own folder | Keep all game code inside `src/games/GameName/` |
 | `localStorage` for cross-session persistence | Fine for within-session scores; data clears on rebuild |
 | External API calls | Keep games fully client-side |
 | Node.js / server-side code | Container only serves static files |
@@ -154,7 +156,7 @@ For any category other than "New game," do not follow the seven-step game workfl
 > After running it you still need to complete Steps 2 (SEO metadata in App.js), 4 (GamePageWrapper SEO content), 5 (OG image), 6 (sitemap), and 7 (rebuild).
 
 ### 1. Game component
-Create `src/games/YourGame.jsx` using `GAME_GUIDE.md` patterns.
+Create the folder `src/games/YourGame/` and place your component in `src/games/YourGame/index.jsx` using `GAME_GUIDE.md` patterns.
 
 ### 2. Route + SEO metadata (`src/App.js`)
 Add a lazy import and a wrapped route:
@@ -237,10 +239,10 @@ Use the template that matches the task category. See the Task Categories table a
 
 When asking an AI agent to build a new game, use this prompt:
 
-> Create a [game type] game for the Odd Noodle Games arcade as a single React component (`.jsx`).
+> Create a [game type] game for the Odd Noodle Games arcade. Place it in `src/games/YourGameName/index.jsx`.
 >
 > Requirements:
-> - Single file, default export function, all inline styles
+> - Folder-based entry point (`index.jsx`), default export function, all inline styles
 > - Kid-friendly: bright colours, encouraging language, big tap targets (min 44×44px)
 > - Canvas-based rendering (or React DOM for board/card/puzzle games)
 > - Desktop controls: keyboard and/or mouse
@@ -262,7 +264,7 @@ When asking an AI agent to build a new game, use this prompt:
 
 ### Bug Fix / Refactoring
 
-> In `src/games/[GameName].jsx`, [describe the bug or refactor goal]. Do not change any other game files. Follow the Coding Standards in AGENTS.md (single file, inline styles, no TypeScript). Rebuild with `docker compose up --build -d` to verify.
+> In `src/games/[GameName]/index.jsx`, [describe the bug or refactor goal]. Do not change any other game files. Follow the Coding Standards in AGENTS.md (folder-per-game, inline styles, no TypeScript). Rebuild with `docker compose up --build -d` to verify.
 
 ### To-Do / Roadmap
 
