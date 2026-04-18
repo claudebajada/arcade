@@ -33,9 +33,9 @@
 
 ## Infrastructure & DevOps
 
-- [ ] Add a GitHub Actions workflow that runs `npm run build` on every PR (catches build errors early)
-- [ ] Pin the Dockerfile `node:20` image to a specific patch version (e.g., `node:20.19.0`) for reproducible builds
-- [ ] Run `npm outdated` and schedule periodic dependency updates (React, react-scripts, react-router-dom)
+- [x] Add a GitHub Actions workflow that runs `npm run build` on every PR (catches build errors early)
+- [x] Pin the Dockerfile `node:20` image to a specific patch version (e.g., `node:20.19.0`) for reproducible builds
+- [x] Run `npm outdated` and schedule periodic dependency updates (React, react-scripts, react-router-dom)
 
 ---
 
