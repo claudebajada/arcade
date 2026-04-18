@@ -2,10 +2,10 @@
 
 ## Priority — Must Do First
 
-- [ ] Create an About page
-- [ ] Add a Contact page or contact email
-- [ ] Publish a Privacy Policy
-- [ ] Publish Terms of Service
+- [x] Create an About page
+- [x] Add a Contact page or contact email
+- [x] Publish a Privacy Policy
+- [x] Publish Terms of Service
 - [ ] Add a clear Home button on every game page
 - [ ] Add a visible site-wide navigation/menu
 - [ ] Check that all broken or placeholder routes are fixed
@@ -32,7 +32,7 @@
 - [ ] **EmbassyOfOddballs** (84 KB) — consider lazy-loading country data arrays to reduce initial parse time
 - [ ] **All games** — audit mobile touch controls end-to-end on a real device
 - [ ] **All games** — verify every interactive element meets the 44 × 44 px minimum tap-target size (AGENTS.md standard)
-- [ ] **Gallery dark/light mode** — persist preference to `localStorage` so it survives page refreshes
+- [x] **Gallery dark/light mode** — persist preference to `localStorage` so it survives page refreshes
 
 ### Ukulele Quest
 - [ ] Add clearer onboarding for first-time users
@@ -126,7 +126,7 @@
 
 - [ ] Make it easier to return from a game page to the main game library
 - [ ] Add breadcrumbs or a simple page path
-- [ ] Make category tags clickable for filtering
+- [x] Make category tags clickable for filtering
 - [ ] Add search or filtering by subject, age, or difficulty
 - [ ] Add a short one-line summary for each game on the homepage
 - [ ] Add a featured/new games section

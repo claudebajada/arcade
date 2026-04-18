@@ -172,6 +172,10 @@ export default function Gallery() {
     const stored = localStorage.getItem('gallery-dark-mode');
     return stored === null ? true : stored === 'true';
   });
+  const [selectedTag, setSelectedTag] = useState(null);
+
+  const allTags = [...new Set(GAMES.flatMap(g => g.tags))].sort();
+  const filteredGames = selectedTag ? GAMES.filter(g => g.tags.includes(selectedTag)) : GAMES;
 
   // Inject fonts + keyframes once
   useEffect(() => {
@@ -618,13 +622,81 @@ export default function Gallery() {
           </div>
         </div>
 
+        {/* ── Tag filter bar ── */}
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 10,
+          marginBottom: 28,
+          alignItems: 'center',
+        }}>
+          <span style={{
+            fontFamily: "'Righteous', sans-serif",
+            fontSize: 11,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+            color: dm ? '#5a3a8a' : '#9061c2',
+            userSelect: 'none',
+            flexShrink: 0,
+          }}>Filter:</span>
+          {allTags.map(tag => {
+            const active = selectedTag === tag;
+            return (
+              <button
+                key={tag}
+                onClick={() => setSelectedTag(active ? null : tag)}
+                aria-pressed={active}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: "'Nunito', sans-serif",
+                  letterSpacing: 0.5,
+                  textTransform: 'uppercase',
+                  padding: '5px 14px',
+                  borderRadius: 20,
+                  cursor: 'pointer',
+                  border: `1.5px solid ${active ? (dm ? '#ff3cac' : '#db2777') : (dm ? '#3a2070' : '#ddd6fe')}`,
+                  background: active
+                    ? (dm ? 'linear-gradient(135deg,#7c00ff,#ff3cac)' : 'linear-gradient(135deg,#c084fc,#fb7185)')
+                    : 'transparent',
+                  color: active ? '#fff' : (dm ? '#a78bfa' : '#6d28d9'),
+                  transition: 'all 0.2s',
+                  boxShadow: active ? (dm ? '0 0 12px #ff3cac55' : '0 0 10px #fb718544') : 'none',
+                }}
+              >
+                {tag}
+              </button>
+            );
+          })}
+          {selectedTag && (
+            <button
+              onClick={() => setSelectedTag(null)}
+              aria-label="Clear filter"
+              style={{
+                fontSize: 11,
+                fontWeight: 900,
+                fontFamily: "'Nunito', sans-serif",
+                padding: '5px 12px',
+                borderRadius: 20,
+                cursor: 'pointer',
+                border: `1.5px solid ${dm ? '#3a2070' : '#ddd6fe'}`,
+                background: 'transparent',
+                color: dm ? '#5a3a8a' : '#9061c2',
+                transition: 'color 0.2s',
+              }}
+            >
+              ✕ All
+            </button>
+          )}
+        </div>
+
         {/* ── Game grid ── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 400px), 1fr))',
           gap: 28,
         }}>
-          {GAMES.map((game) => {
+          {filteredGames.map((game) => {
             const isHovered = hovered === game.id;
             return (
               <a
@@ -708,21 +780,33 @@ export default function Gallery() {
                     </p>
 
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      {game.tags.map((tag) => (
-                        <span key={tag} style={{
-                          fontSize: 11, fontWeight: 700,
-                          color: isHovered ? game.colors[0] : tagClr,
-                          border: `1.5px solid ${isHovered ? game.colors[0] + '80' : tagBorder}`,
-                          borderRadius: 20,
-                          padding: '3px 12px',
-                          letterSpacing: 0.5,
-                          textTransform: 'uppercase',
-                          transition: 'color 0.3s, border-color 0.3s',
-                          background: isHovered ? game.colors[0] + '12' : 'transparent',
-                        }}>
-                          {tag}
-                        </span>
-                      ))}
+                      {game.tags.map((tag) => {
+                        const tagActive = selectedTag === tag;
+                        return (
+                          <span
+                            key={tag}
+                            role="button"
+                            tabIndex={0}
+                            aria-pressed={tagActive}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedTag(tagActive ? null : tag); }}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setSelectedTag(tagActive ? null : tag); } }}
+                            style={{
+                              fontSize: 11, fontWeight: 700,
+                              color: tagActive ? '#fff' : (isHovered ? game.colors[0] : tagClr),
+                              border: `1.5px solid ${tagActive ? game.colors[0] : (isHovered ? game.colors[0] + '80' : tagBorder)}`,
+                              borderRadius: 20,
+                              padding: '3px 12px',
+                              letterSpacing: 0.5,
+                              textTransform: 'uppercase',
+                              transition: 'color 0.3s, border-color 0.3s, background 0.3s',
+                              background: tagActive ? game.colors[0] : (isHovered ? game.colors[0] + '12' : 'transparent'),
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -750,7 +834,7 @@ export default function Gallery() {
           })}
 
           {/* Coming soon card — shown when game count is odd to fill the grid */}
-          {GAMES.length % 2 !== 0 && (
+          {filteredGames.length % 2 !== 0 && (
             <div style={{
               background: dm ? '#0a0c2040' : '#ffffff60',
               border: `2px dashed ${dm ? '#2a1a5e' : '#ddd6fe'}`,
