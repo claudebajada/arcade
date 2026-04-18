@@ -158,7 +158,10 @@ export default function Gallery() {
   const [hoveredFooterLink, setHoveredFooterLink] = useState(null);
   const animRef = useRef(null);
   const timeRef = useRef(0);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = localStorage.getItem('gallery-dark-mode');
+    return stored === null ? true : stored === 'true';
+  });
 
   // Inject fonts + keyframes once
   useEffect(() => {
@@ -373,7 +376,11 @@ export default function Gallery() {
           }}>☾ Dark</span>
 
           <button
-            onClick={() => setDarkMode(!dm)}
+            onClick={() => {
+              const next = !dm;
+              localStorage.setItem('gallery-dark-mode', String(next));
+              setDarkMode(next);
+            }}
             aria-label={dm ? 'Switch to light mode' : 'Switch to dark mode'}
             aria-pressed={!dm}
             style={{
