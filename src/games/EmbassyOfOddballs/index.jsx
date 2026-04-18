@@ -481,7 +481,7 @@ export default function EmbassyOfOddballs(){
   // ═══ TITLE ═══
   if(screen==="title"){
     return(<div style={{minHeight:"100vh",background:`linear-gradient(160deg,${C.navy} 0%,#0F1B33 40%,#162544 100%)`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display',serif",overflow:"hidden",position:"relative",padding:20}}>
-      <div onClick={()=>navigate("/")} style={{position:"absolute",top:12,left:16,color:"#fff",fontSize:13,cursor:"pointer",zIndex:10,padding:"8px 14px",borderRadius:20,background:"rgba(0,0,0,0.4)",border:"2px solid rgba(255,255,255,0.3)",fontFamily:"'Nunito','Baloo 2',sans-serif",fontWeight:700,userSelect:"none"}}>← ODD NOODLE</div>
+      <div onClick={()=>navigate("/")} style={{position:"absolute",top:12,left:16,color:"#fff",fontSize:13,cursor:"pointer",zIndex:10,padding:"8px 14px",borderRadius:20,background:"rgba(0,0,0,0.4)",border:"2px solid rgba(255,255,255,0.3)",fontFamily:"'Nunito','Baloo 2',sans-serif",fontWeight:700,userSelect:"none"}}>← ARCADE</div>
       <div style={{position:"absolute",inset:0,opacity:.03,backgroundImage:`repeating-linear-gradient(0deg,transparent,transparent 50px,#fff 50px,#fff 51px),repeating-linear-gradient(90deg,transparent,transparent 50px,#fff 50px,#fff 51px)`}}/>
       {[...Array(5)].map((_,i)=>(<div key={i} style={{position:"absolute",top:`${10+i*18}%`,left:`${5+(i%3)*35}%`,opacity:.06,animation:`gentleFloat ${3+i*.5}s ease-in-out infinite`,animationDelay:`${i*.8}s`}}><WaxSeal size={30+i*8} color={i%2===0?C.gold:C.red} text={["✦","⚜","✧","❋","✦"][i]}/></div>))}
       <div style={{textAlign:"center",position:"relative",zIndex:2,animation:"fadeUp 1s ease-out"}}>
@@ -524,7 +524,7 @@ export default function EmbassyOfOddballs(){
       {i:"🏅",t:"Earn Seals",d:"Fully solve crises for Seals. Build streaks for bonuses. Beat the clock at higher levels. Aim for Grand Ambassador!"},
     ];
     return(<div style={{minHeight:"100vh",background:`linear-gradient(160deg,${C.navy} 0%,#0F1B33 100%)`,display:"flex",alignItems:"center",justifyContent:"center",padding:20,position:"relative"}}>
-      <div onClick={()=>navigate("/")} style={{position:"absolute",top:12,left:16,color:"#fff",fontSize:13,cursor:"pointer",zIndex:10,padding:"8px 14px",borderRadius:20,background:"rgba(0,0,0,0.4)",border:"2px solid rgba(255,255,255,0.3)",fontFamily:"'Nunito','Baloo 2',sans-serif",fontWeight:700,userSelect:"none"}}>← ODD NOODLE</div>
+      <div onClick={()=>navigate("/")} style={{position:"absolute",top:12,left:16,color:"#fff",fontSize:13,cursor:"pointer",zIndex:10,padding:"8px 14px",borderRadius:20,background:"rgba(0,0,0,0.4)",border:"2px solid rgba(255,255,255,0.3)",fontFamily:"'Nunito','Baloo 2',sans-serif",fontWeight:700,userSelect:"none"}}>← ARCADE</div>
       <div style={{...paperBg,maxWidth:560,width:"100%",padding:"28px 24px",animation:"paperSlide 0.5s ease-out"}}>
         <div style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:900,color:C.navy,marginBottom:4,textAlign:"center"}}>How to Play</div>
         <div style={{width:80,height:2,margin:"0 auto 20px",background:`linear-gradient(90deg,transparent,${C.navy}66,transparent)`}}/>
@@ -731,7 +731,7 @@ export default function EmbassyOfOddballs(){
     const rc=pct>=.9?C.gold:pct>=.7?C.green:pct>=.4?C.navy:C.red;
     const solved=roundResults.filter(r=>r.success).length;
     return(<div style={{minHeight:"100vh",background:`linear-gradient(160deg,${C.navy} 0%,#0F1B33 100%)`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Source Serif 4',serif",padding:20,position:"relative"}}>
-      <div onClick={()=>navigate("/")} style={{position:"absolute",top:12,left:16,color:"#fff",fontSize:13,cursor:"pointer",zIndex:10,padding:"8px 14px",borderRadius:20,background:"rgba(0,0,0,0.4)",border:"2px solid rgba(255,255,255,0.3)",fontFamily:"'Nunito','Baloo 2',sans-serif",fontWeight:700,userSelect:"none"}}>← ODD NOODLE</div>
+      <div onClick={()=>navigate("/")} style={{position:"absolute",top:12,left:16,color:"#fff",fontSize:13,cursor:"pointer",zIndex:10,padding:"8px 14px",borderRadius:20,background:"rgba(0,0,0,0.4)",border:"2px solid rgba(255,255,255,0.3)",fontFamily:"'Nunito','Baloo 2',sans-serif",fontWeight:700,userSelect:"none"}}>← ARCADE</div>
       <div style={{...paperBg,maxWidth:540,width:"100%",padding:"32px 26px",animation:"paperSlide 0.6s ease-out"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Special Elite',monospace",fontSize:11,color:C.red,letterSpacing:4,marginBottom:10}}>⚠ FINAL ASSESSMENT ⚠</div>

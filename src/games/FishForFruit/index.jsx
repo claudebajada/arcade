@@ -1564,7 +1564,7 @@ export default function FishForFruit() {
           userSelect: "none",
         }}
       >
-        ← ODD NOODLE
+        ← ARCADE
       </div>
       <div
         style={{

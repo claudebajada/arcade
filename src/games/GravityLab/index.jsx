@@ -890,7 +890,7 @@ export default function GravityLab() {
         fontFamily, fontWeight: 700, userSelect: 'none',
       }}
     >
-      ← ODD NOODLE
+      ← ARCADE
     </div>
   );
 
