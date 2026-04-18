@@ -127,7 +127,7 @@
 - [ ] Make it easier to return from a game page to the main game library
 - [ ] Add breadcrumbs or a simple page path
 - [x] Make category tags clickable for filtering
-- [ ] Add search or filtering by subject, age, or difficulty
+- [x] Add search or filtering by subject, age, or difficulty
 - [ ] Add a short one-line summary for each game on the homepage
 - [ ] Add a featured/new games section
 - [ ] Make loading states more informative
