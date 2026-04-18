@@ -173,9 +173,19 @@ export default function Gallery() {
     return stored === null ? true : stored === 'true';
   });
   const [selectedTag, setSelectedTag] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const allTags = [...new Set(GAMES.flatMap(g => g.tags))].sort();
-  const filteredGames = selectedTag ? GAMES.filter(g => g.tags.includes(selectedTag)) : GAMES;
+  const filteredGames = GAMES.filter(g => {
+    const matchesTag = !selectedTag || g.tags.includes(selectedTag);
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch = !q ||
+      g.title.toLowerCase().includes(q) ||
+      g.subtitle.toLowerCase().includes(q) ||
+      g.description.toLowerCase().includes(q) ||
+      g.tags.some(t => t.toLowerCase().includes(q));
+    return matchesTag && matchesSearch;
+  });
 
   // Inject fonts + keyframes once
   useEffect(() => {
@@ -622,6 +632,39 @@ export default function Gallery() {
           </div>
         </div>
 
+        {/* ── Search box ── */}
+        <div style={{ marginBottom: 16 }}>
+          <input
+            type="search"
+            placeholder="Search games…"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            aria-label="Search games"
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: '10px 16px',
+              borderRadius: 24,
+              border: `1.5px solid ${dm ? '#3a2070' : '#ddd6fe'}`,
+              background: dm ? '#0d0b2b' : '#ffffff',
+              color: dm ? '#e0d4ff' : '#1a0a2e',
+              fontFamily: "'Nunito', sans-serif",
+              fontSize: 14,
+              fontWeight: 600,
+              outline: 'none',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+            }}
+            onFocus={e => {
+              e.target.style.borderColor = dm ? '#7c00ff' : '#7c3aed';
+              e.target.style.boxShadow = dm ? '0 0 0 3px #7c00ff22' : '0 0 0 3px #7c3aed22';
+            }}
+            onBlur={e => {
+              e.target.style.borderColor = dm ? '#3a2070' : '#ddd6fe';
+              e.target.style.boxShadow = 'none';
+            }}
+          />
+        </div>
+
         {/* ── Tag filter bar ── */}
         <div style={{
           display: 'flex',
@@ -833,8 +876,37 @@ export default function Gallery() {
             );
           })}
 
+          {/* No results message */}
+          {filteredGames.length === 0 && (
+            <div style={{
+              gridColumn: '1 / -1',
+              textAlign: 'center',
+              padding: '48px 24px',
+              color: dm ? '#5a3a8a' : '#9061c2',
+              fontFamily: "'Nunito', sans-serif",
+            }}>
+              <div style={{ fontSize: 40, marginBottom: 12, opacity: 0.5 }}>🔍</div>
+              <p style={{ fontSize: 15, fontWeight: 700 }}>
+                No games match your search.
+              </p>
+              <button
+                onClick={() => { setSearchQuery(''); setSelectedTag(null); }}
+                style={{
+                  marginTop: 12,
+                  fontSize: 12, fontWeight: 700, fontFamily: "'Nunito', sans-serif",
+                  padding: '6px 18px', borderRadius: 20, cursor: 'pointer',
+                  border: `1.5px solid ${dm ? '#3a2070' : '#ddd6fe'}`,
+                  background: 'transparent',
+                  color: dm ? '#7c00ff' : '#7c3aed',
+                }}
+              >
+                Clear search
+              </button>
+            </div>
+          )}
+
           {/* Coming soon card — shown when game count is odd to fill the grid */}
-          {filteredGames.length % 2 !== 0 && (
+          {filteredGames.length % 2 !== 0 && filteredGames.length > 0 && (
             <div style={{
               background: dm ? '#0a0c2040' : '#ffffff60',
               border: `2px dashed ${dm ? '#2a1a5e' : '#ddd6fe'}`,
