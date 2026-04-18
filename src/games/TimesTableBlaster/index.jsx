@@ -88,6 +88,7 @@ export default function TimesTableBlaster() {
   // Screens
   const [screen, setScreen] = useState("menu");
   const [selTables, setSelTables] = useState([2, 5, 10]);
+  const [difficulty, setDifficulty] = useState("easy");
   const [result, setResult] = useState({ score: 0, level: 1, answered: 0 });
 
   // Canvas + mutable game state
@@ -96,11 +97,12 @@ export default function TimesTableBlaster() {
   const tRef = useRef(null);
   const gsRef = useRef(null);
 
-  const initGs = useCallback((tables) => {
+  const initGs = useCallback((tables, hardMode = false) => {
     const W = 480;
     const q = makeQuestion(tables);
     gsRef.current = {
       tables,
+      hardMode,
       cannon: { x: W / 2 },
       bullets: [],
       bubbles: makeBubbles(q.answer, W),
@@ -183,7 +185,8 @@ export default function TimesTableBlaster() {
 
         if (bub.y - bub.r > H - 50) {
           bub.alive = false;
-          if (bub.correct) {
+          if (bub.correct || gs.hardMode) {
+            gs.bubbles.forEach(bb => { bb.alive = false; });
             gs.lives--;
             tone(300, 0.1, "triangle", 0.2);
             setTimeout(() => tone(200, 0.2, "triangle", 0.15), 100);
@@ -279,6 +282,23 @@ export default function TimesTableBlaster() {
         d.x += d.vx * dt;
         d.y += d.vy * dt;
         d.rotation += d.rotSpeed * dt;
+        if (gs.hardMode && d.y + d.r > H - 50) {
+          d.alive = false;
+          gs.lives--;
+          tone(300, 0.1, "triangle", 0.2);
+          setTimeout(() => tone(200, 0.2, "triangle", 0.15), 100);
+          if (gs.lives <= 0) {
+            gs.over = true;
+            [400, 300, 220, 160].forEach((f, i) =>
+              setTimeout(() => tone(f, 0.25, "sawtooth", 0.18), i * 200)
+            );
+            setResult({ score: gs.score, level: gs.level, answered: gs.answered });
+            setTimeout(() => setScreen("gameover"), 900);
+            return;
+          }
+          gs.paused = true;
+          gs.pauseTimer = 0.7;
+        }
       }
       gs.distractors = gs.distractors.filter(d =>
         (d.alive || d.flash > 0) && !(d.x < -60 || d.x > W + 60 || d.y > H + 60)
@@ -588,7 +608,7 @@ export default function TimesTableBlaster() {
         <div
           onClick={() => setSelTables(allOn ? [2, 5, 10] : [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])}
           style={{
-            fontSize: 8, cursor: "pointer", marginBottom: 28,
+            fontSize: 8, cursor: "pointer", marginBottom: 20,
             padding: "5px 14px", borderRadius: 4, userSelect: "none",
             border: `1px solid ${allOn ? "#00f5d4" : "#374151"}`,
             color: allOn ? "#00f5d4" : "#94a3b8",
@@ -597,10 +617,31 @@ export default function TimesTableBlaster() {
           {allOn ? "✓ ALL TABLES" : "SELECT ALL"}
         </div>
 
+        <div style={{ fontSize: 8, color: "#94a3b8", marginBottom: 8, letterSpacing: 1 }}>DIFFICULTY:</div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 28 }}>
+          {[["easy", "#059669", "#34d399"], ["hard", "#dc2626", "#f87171"]].map(([d, bg, border]) => (
+            <div
+              key={d}
+              onClick={() => setDifficulty(d)}
+              style={{
+                padding: "7px 22px", borderRadius: 6, cursor: "pointer",
+                fontSize: 9, letterSpacing: 2, userSelect: "none",
+                background: difficulty === d ? bg : "#1e1b4b",
+                border: `2px solid ${difficulty === d ? border : "#374151"}`,
+                color: difficulty === d ? "#fff" : "#94a3b8",
+                boxShadow: difficulty === d ? `0 0 10px ${bg}66` : "none",
+                WebkitTapHighlightColor: "transparent",
+              }}
+            >
+              {d.toUpperCase()}
+            </div>
+          ))}
+        </div>
+
         <div
           onClick={() => {
             if (selTables.length === 0) return;
-            initGs(selTables);
+            initGs(selTables, difficulty === "hard");
             setScreen("playing");
           }}
           style={{
@@ -624,6 +665,9 @@ export default function TimesTableBlaster() {
           Shoot the correct answer bubble!<br />
           Wrong shot or missed = lose a life<br />
           <span style={{ color: "#f97316" }}>Shoot asteroids for +5 bonus!</span>
+          {difficulty === "hard" && (
+            <><br /><span style={{ color: "#f87171" }}>HARD: anything reaching the bottom = lose a life!</span></>
+          )}
         </div>
       </div>
     );
