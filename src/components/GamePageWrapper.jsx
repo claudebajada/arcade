@@ -79,6 +79,14 @@ const GAME_SEO_CONTENT = {
     controls: 'Mouse / Tap — Select an answer | Keyboard 1–4 — Quick-select options | H — Show hint (Learn mode) | P — Replay audio question | Enter — Continue after answering',
     whatYoullLearn: 'Note Quest builds well-rounded music literacy: note names on the treble clef, interval recognition, chord construction, key signatures, time signatures, mode names, and basic guitar and ukulele chord shapes. Regular play develops the musical ear alongside theoretical understanding.',
   },
+  '/times-table-blaster': {
+    name: 'Times Table Blaster',
+    tagline: 'Free Multiplication Arcade Game',
+    about: 'Times Table Blaster is an arcade game that turns multiplication practice into fast-paced fun. Choose which times tables you want to drill — anything from 2s to 12s — then pilot a cannon at the bottom of the screen, shooting the correct answer out of a stream of falling bubbles before they hit the ground. Speed increases with every level, keeping players on their toes.',
+    howToPlay: 'A multiplication question appears at the top of the screen. Four answer bubbles slowly fall from above — only one is correct. Move your cannon left and right and fire at the right bubble before it hits the ground. Shooting the wrong bubble or letting the correct one fall costs a life. Answer five questions to level up; the bubbles fall faster each level.',
+    controls: 'Arrow Keys ← → — Move cannon left and right | Space Bar / ↑ Arrow — Fire | Mobile: on-screen ◀ ▶ buttons to move, FIRE button to shoot',
+    whatYoullLearn: 'Times Table Blaster builds fast recall of multiplication facts from 2 to 12. Players choose which tables to practise, making it easy to focus on tricky ones like 7s or 8s. The time pressure of falling bubbles rewards instant recall over slow counting, building the automatic fluency needed for mental maths, long multiplication, and fractions.',
+  },
   '/ukulele-quest': {
     name: 'Ukulele Quest',
     tagline: 'Free Classroom Ukulele Learning Game',

@@ -107,11 +107,21 @@ export const GAMES = [
     subtitle: 'squash bugs and rule the code',
     emoji: '🐛',
     path: '/debug-dynasty',
-    colors: ['#ef4444', '#f97316'], 
+    colors: ['#ef4444', '#f97316'],
     description: 'Find the glitches in the system and become the ultimate ruler of the Debug Dynasty!',
     tags: ['arcade', 'coding'],
   },
-  
+  {
+    id: 'times-table-blaster',
+    title: 'Times Table Blaster',
+    subtitle: 'blast your way to maths mastery',
+    emoji: '💥',
+    path: '/times-table-blaster',
+    colors: ['#ffe066', '#7c3aed'],
+    description: 'Pick your times tables and fire your cannon at the correct answer bubble before it hits the ground. Level up as bubbles fall faster!',
+    tags: ['arcade', 'maths', 'educational'],
+  },
+
   // {
   //   id: 'your-next-game',
   //   title: 'Your Next Game',

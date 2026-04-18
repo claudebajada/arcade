@@ -17,7 +17,7 @@
 
 - [ ] **Typing Trainer** — keyboard skills; type falling words before they hit the ground
 - [ ] **Color Lab** — mix primary colors to match a target; art + science education
-- [ ] **Times Table Blaster** — arcade-style multiplication practice
+- [x] **Times Table Blaster** — arcade-style multiplication practice
 - [ ] **Fraction Frenzy** — fractions and equivalent-fraction matching puzzles
 - [ ] **Rhythm Tapper** — tap along to a beat; complements UkuleleQuest & NoteQuest
 - [ ] **World Capitals Quiz** — geography follow-up to Embassy of Oddballs; match capitals to countries

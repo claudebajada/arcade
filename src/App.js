@@ -28,6 +28,7 @@ const RelativisticRacer_Arcade = React.lazy(() => import('./games/RelativisticRa
 const Enigma = React.lazy(() => import('./games/Enigma'));
 const NoteQuest = React.lazy(() => import('./games/NoteQuest'));
 const UkuleleQuest = React.lazy(() => import('./games/UkuleleQuest'));
+const TimesTableBlaster = React.lazy(() => import('./games/TimesTableBlaster'));
 const About = React.lazy(() => import('./About'));
 const PrivacyPolicy = React.lazy(() => import('./PrivacyPolicy'));
 const TermsOfUse = React.lazy(() => import('./TermsOfUse'));
@@ -96,6 +97,12 @@ const PAGE_META = {
     description: 'A classroom ukulele game for shared tablets. Hunt notes on the fretboard, build chord shapes, and take turns in Pass & Play, Council, or GamesMaster mode. No download needed!',
     genre: ['Educational', 'Music'],
     image: `${BASE_URL}/og/ukulele-quest.png`,
+  },
+  '/times-table-blaster': {
+    title: 'Times Table Blaster | Free Multiplication Game for Kids | Odd Noodle Games',
+    description: 'Blast the correct answer out of the sky! An arcade game for practising times tables 2–12. Choose your tables, fire your cannon, and level up. Free to play — no download needed!',
+    genre: ['Arcade', 'Educational', 'Maths'],
+    image: `${BASE_URL}/og/times-table-blaster.png`,
   },
   '/about': {
     title: 'About Odd Noodle Games | Free Browser Games for Kids',
@@ -357,6 +364,9 @@ export default function App() {
           } />
           <Route path="/ukulele-quest" element={
             <GamePageWrapper path="/ukulele-quest"><UkuleleQuest /></GamePageWrapper>
+          } />
+          <Route path="/times-table-blaster" element={
+            <GamePageWrapper path="/times-table-blaster"><TimesTableBlaster /></GamePageWrapper>
           } />
           <Route path="/about"   element={<About />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
