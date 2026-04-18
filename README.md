@@ -29,20 +29,23 @@ game-arcade/
     ├── App.js              # Router (add game routes here)
     ├── Gallery.jsx         # Landing page with game cards
     └── games/
-        └── FishForFruit.jsx  # First game
+        └── FishForFruit/     # Each game has its own folder
+            └── index.jsx     # Game component (entry point)
 ```
 
 ## Adding a New Game
 
-1. **Create the game component** in `src/games/YourGame.jsx`
+1. **Create the game folder and component** at `src/games/YourGame/index.jsx`
    - Export a default React component
    - Import `useNavigate` from `react-router-dom` for the back button
 
 2. **Register the route** in `src/App.js`:
    ```jsx
-   import YourGame from './games/YourGame';
+   const YourGame = React.lazy(() => import('./games/YourGame'));
    // Inside <Routes>:
-   <Route path="/your-game" element={<YourGame />} />
+   <Route path="/your-game" element={
+     <GamePageWrapper path="/your-game"><YourGame /></GamePageWrapper>
+   } />
    ```
 
 3. **Add a gallery card** in `src/Gallery.jsx` — add to the `GAMES` array:
