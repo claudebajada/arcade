@@ -104,6 +104,8 @@ const STYLES = {
     color: '#d4c8f0',
     fontFamily: "'Nunito', 'Baloo 2', sans-serif",
     padding: '56px 24px 48px',
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
   },
   container: {
     maxWidth: 820,
