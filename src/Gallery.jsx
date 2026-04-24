@@ -121,6 +121,16 @@ export const GAMES = [
     description: 'Pick your times tables and fire your cannon at the correct answer bubble before it hits the ground. Level up as bubbles fall faster!',
     tags: ['arcade', 'maths', 'educational'],
   },
+  {
+    id: 'pie-stack',
+    title: 'Pie Stack',
+    subtitle: 'drop pies, merge fractions',
+    emoji: '🥧',
+    path: '/pie-stack',
+    colors: ['#ff9a76', '#ffd166'],
+    description: 'Drop pie slices into a wobbly stack and merge matching fractions into whole pies. Balance the tower while learning how parts add up.',
+    tags: ['puzzle', 'math', 'physics'],
+  },
 
   // {
   //   id: 'your-next-game',
