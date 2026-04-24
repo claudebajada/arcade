@@ -29,6 +29,7 @@ const Enigma = React.lazy(() => import('./games/Enigma'));
 const NoteQuest = React.lazy(() => import('./games/NoteQuest'));
 const UkuleleQuest = React.lazy(() => import('./games/UkuleleQuest'));
 const TimesTableBlaster = React.lazy(() => import('./games/TimesTableBlaster'));
+const PieStack = React.lazy(() => import('./games/PieStack'));
 const About = React.lazy(() => import('./About'));
 const PrivacyPolicy = React.lazy(() => import('./PrivacyPolicy'));
 const TermsOfUse = React.lazy(() => import('./TermsOfUse'));
@@ -103,6 +104,12 @@ const PAGE_META = {
     description: 'Blast the correct answer out of the sky! An arcade game for practising times tables 2–12. Choose your tables, fire your cannon, and level up. Free to play — no download needed!',
     genre: ['Arcade', 'Educational', 'Maths'],
     image: `${BASE_URL}/og/times-table-blaster.png`,
+  },
+  '/pie-stack': {
+    title: 'Pie Stack | Free Math Physics Puzzle Game | Odd Noodle Games',
+    description: 'Balance and stack quirky pies using timing, angles, and fractions in this playful puzzle challenge. Free browser fun for kids, no download needed!',
+    genre: ['Puzzle', 'Math', 'Physics'],
+    image: `${BASE_URL}/og/pie-stack.png`,
   },
   '/about': {
     title: 'About Odd Noodle Games | Free Browser Games for Kids',
@@ -367,6 +374,9 @@ export default function App() {
           } />
           <Route path="/times-table-blaster" element={
             <GamePageWrapper path="/times-table-blaster"><TimesTableBlaster /></GamePageWrapper>
+          } />
+          <Route path="/pie-stack" element={
+            <GamePageWrapper path="/pie-stack"><PieStack /></GamePageWrapper>
           } />
           <Route path="/about"   element={<About />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
