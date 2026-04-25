@@ -123,6 +123,27 @@ export default function PieStack() {
   const totalHammer = 3 + Math.floor(score / 50);
   const hammerLeft = Math.max(0, totalHammer - hammerUsed);
 
+  const safeGetBestScore = useCallback(() => {
+    try {
+      const raw = localStorage.getItem("pieStack:best");
+      const parsed = Number(raw);
+      if (!Number.isFinite(parsed) || parsed < 0) return 0;
+      return parsed;
+    } catch (e) {
+      return 0;
+    }
+  }, []);
+
+  const safeSetBestScore = useCallback((value) => {
+    try {
+      localStorage.setItem("pieStack:best", String(value));
+      return true;
+    } catch (e) {
+      console.debug("PieStack: could not persist best score this session.");
+      return false;
+    }
+  }, []);
+
   useEffect(() => {
     spawnXRef.current = spawnX;
   }, [spawnX]);
@@ -495,7 +516,7 @@ export default function PieStack() {
         const finalScore = scoreRef.current;
         setBest((prev) => {
           const bestNow = Math.max(prev, finalScore);
-          localStorage.setItem("pieStack:best", String(bestNow));
+          safeSetBestScore(bestNow);
           return bestNow;
         });
         setScreen("results");
@@ -658,7 +679,7 @@ export default function PieStack() {
     };
 
     rafRef.current = requestAnimationFrame(loop);
-  }, [addFracs, attemptMerge, drawPieToken, radiusFor]);
+  }, [addFracs, attemptMerge, drawPieToken, radiusFor, safeSetBestScore]);
 
   const startGame = useCallback(() => {
     setScore(0);
@@ -759,8 +780,7 @@ export default function PieStack() {
   }, [dropCurrentPiece, hammerLeft, screen]);
 
   useEffect(() => {
-    const b = Number(localStorage.getItem("pieStack:best") || 0);
-    setBest(Number.isFinite(b) ? b : 0);
+    setBest(safeGetBestScore());
     try {
       const raw = localStorage.getItem("pieStack:book");
       if (raw) {
@@ -770,7 +790,7 @@ export default function PieStack() {
     } catch (e) {
       // ignore malformed state
     }
-  }, []);
+  }, [safeGetBestScore]);
 
   useEffect(() => {
     let mounted = true;
