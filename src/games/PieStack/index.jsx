@@ -79,6 +79,12 @@ function pairKeyFor(idA, idB) {
   return idA < idB ? `${idA}:${idB}` : `${idB}:${idA}`;
 }
 
+function canMergeTo(sum) {
+  if (sum.num > sum.den) return false;
+  if (sum.num === sum.den) return true;
+  return ALLOWED_SET.has(keyOf(sum));
+}
+
 export default function PieStack() {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
@@ -89,6 +95,7 @@ export default function PieStack() {
   const bodiesRef = useRef([]);
   const particlesRef = useRef([]);
   const wholePieFxRef = useRef([]);
+  const mergeScoreFxRef = useRef([]);
   const audioCtxRef = useRef(null);
   const suppressCollisionRef = useRef(new Set());
   const seqRef = useRef(1);
@@ -219,28 +226,26 @@ export default function PieStack() {
 
   const markDiscovery = useCallback((frac, equation) => {
     const k = keyOf(frac);
-    let freshFraction = false;
-    let freshEquation = false;
     setBook((prev) => {
+      const freshFraction = !prev.fractions[k];
+      const freshEquation = Boolean(equation && !prev.equations[equation]);
       const next = {
         fractions: { ...prev.fractions },
         equations: { ...prev.equations },
       };
-      if (!next.fractions[k]) freshFraction = true;
       next.fractions[k] = true;
       if (equation) {
-        if (!next.equations[equation]) freshEquation = true;
         next.equations[equation] = true;
       }
       localStorage.setItem("pieStack:book", JSON.stringify(next));
+      if (freshFraction || freshEquation) {
+        setNewBadges((prevBadges) => ({
+          fractions: freshFraction ? { ...prevBadges.fractions, [k]: true } : prevBadges.fractions,
+          equations: freshEquation && equation ? { ...prevBadges.equations, [equation]: true } : prevBadges.equations,
+        }));
+      }
       return next;
     });
-    if (freshFraction || freshEquation) {
-      setNewBadges((prev) => ({
-        fractions: freshFraction ? { ...prev.fractions, [k]: true } : prev.fractions,
-        equations: freshEquation && equation ? { ...prev.equations, [equation]: true } : prev.equations,
-      }));
-    }
   }, []);
 
   const createPiece = useCallback((x, y, frac, opts = {}) => {
@@ -288,6 +293,8 @@ export default function PieStack() {
   const drawPieToken = useCallback((ctx, frac, radius, key, options = {}) => {
     const meta = FRACTION_META[key] || { color: "#f8fafc", ring: "#334155" };
     const textureAlpha = options.textureAlpha ?? 0.18;
+    const smallPiece = radius < 28;
+    const tinyPiece = radius < 22;
     const totalSlices = Math.max(1, frac.den);
     const shadedSlices = Math.max(0, Math.min(frac.num, totalSlices));
     const startAngle = -Math.PI / 2;
@@ -325,23 +332,26 @@ export default function PieStack() {
       }
     }
 
-    const lines = Math.max(4, totalSlices);
-    ctx.strokeStyle = "rgba(15,23,42,0.16)";
-    ctx.lineWidth = 1.5;
-    for (let i = 0; i < lines; i += 1) {
-      const ang = startAngle + ((Math.PI * 2 * i) / lines);
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(Math.cos(ang) * (radius - 9), Math.sin(ang) * (radius - 9));
-      ctx.stroke();
+    if (!tinyPiece) {
+      const lines = smallPiece ? Math.max(3, Math.ceil(totalSlices / 2)) : Math.max(4, totalSlices);
+      ctx.strokeStyle = "rgba(15,23,42,0.16)";
+      ctx.lineWidth = smallPiece ? 1.1 : 1.5;
+      for (let i = 0; i < lines; i += 1) {
+        const ang = startAngle + ((Math.PI * 2 * i) / lines);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.cos(ang) * (radius - 9), Math.sin(ang) * (radius - 9));
+        ctx.stroke();
+      }
     }
 
-    for (let i = 0; i < 8; i += 1) {
-      const ang = (Math.PI * 2 * i) / 8 + (frac.num * 0.1);
+    const dotCount = tinyPiece ? 0 : smallPiece ? 3 : 8;
+    for (let i = 0; i < dotCount; i += 1) {
+      const ang = (Math.PI * 2 * i) / dotCount + (frac.num * 0.1);
       const dist = radius * (0.35 + (i % 3) * 0.12);
       ctx.beginPath();
-      ctx.arc(Math.cos(ang) * dist, Math.sin(ang) * dist, 2.2, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(120,53,15,${textureAlpha})`;
+      ctx.arc(Math.cos(ang) * dist, Math.sin(ang) * dist, smallPiece ? 1.6 : 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(120,53,15,${smallPiece ? textureAlpha * 0.7 : textureAlpha})`;
       ctx.fill();
     }
 
@@ -409,7 +419,15 @@ export default function PieStack() {
       burst(x, y, "#a7f3d0");
       playTone("merge");
       markDiscovery(sum, eqText);
-      setScore((s) => s + 5 + sum.num);
+      const points = 5 + sum.num;
+      mergeScoreFxRef.current.push({
+        x,
+        y: y - 12,
+        life: 26,
+        maxLife: 26,
+        text: `+${points}`,
+      });
+      setScore((s) => s + points);
       setLastEquation(eqText);
       setMessage(`${eqText} ✅`);
     }
@@ -435,6 +453,7 @@ export default function PieStack() {
     bodiesRef.current = [];
     particlesRef.current = [];
     wholePieFxRef.current = [];
+    mergeScoreFxRef.current = [];
     suppressCollisionRef.current.clear();
 
     const wallOpts = { isStatic: true, restitution: 0.1, render: { visible: false } };
@@ -531,7 +550,7 @@ export default function PieStack() {
       bodiesRef.current.forEach((body) => {
         if (!body?.pie) return;
         const sum = addFracs(body.pie.frac, liveNextFrac);
-        if (sum.num <= sum.den && ALLOWED_SET.has(keyOf(sum))) {
+        if (canMergeTo(sum)) {
           hintTargets.set(body.pie.id, sum.num === sum.den ? "whole" : "merge");
         }
       });
@@ -543,7 +562,7 @@ export default function PieStack() {
         ctx.translate(body.position.x, body.position.y);
         ctx.rotate(body.angle);
         const hint = hintTargets.get(body.pie.id);
-        if (hint) {
+        if (!liveHammerMode && hint) {
           ctx.shadowBlur = 24;
           ctx.shadowColor = hint === "whole" ? "rgba(250,204,21,0.9)" : "rgba(74,222,128,0.9)";
         }
@@ -582,6 +601,17 @@ export default function PieStack() {
         ctx.fillText(`WHOLE PIE! +${fx.points}`, fx.x, fx.y - 68 - progress * 18);
       });
       wholePieFxRef.current = wholePieFxRef.current.filter((fx) => fx.life > 0);
+      mergeScoreFxRef.current.forEach((fx) => {
+        fx.life -= 1;
+        const progress = 1 - (fx.life / fx.maxLife);
+        ctx.globalAlpha = Math.max(0, fx.life / fx.maxLife);
+        ctx.fillStyle = "#dcfce7";
+        ctx.font = "800 18px Nunito, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(fx.text, fx.x, fx.y - progress * 26);
+        ctx.globalAlpha = 1;
+      });
+      mergeScoreFxRef.current = mergeScoreFxRef.current.filter((fx) => fx.life > 0);
 
       if (!liveHammerMode) {
         const p = liveNextFrac;
@@ -609,6 +639,8 @@ export default function PieStack() {
       }
 
       if (liveHammerMode) {
+        const previewKey = HAMMER_SPLIT[nextKey] ? nextKey : "1/2";
+        const splitPreview = `${previewKey} → ${HAMMER_SPLIT[previewKey].map((f) => `${f[0]}/${f[1]}`).join(" + ")}`;
         ctx.fillStyle = "rgba(251,113,133,0.16)";
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
         ctx.fillStyle = "rgba(15,23,42,0.72)";
@@ -619,7 +651,7 @@ export default function PieStack() {
         ctx.fillText("Tap a slice to split it", 28, 44);
         ctx.textAlign = "right";
         ctx.fillStyle = "#fee2e2";
-        ctx.fillText(`${nextKey} preview`, CANVAS_W - 26, 44);
+        ctx.fillText(splitPreview, CANVAS_W - 26, 44);
       }
 
       rafRef.current = requestAnimationFrame(loop);
@@ -882,7 +914,19 @@ export default function PieStack() {
           <span>{message}</span>
           <span style={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
             Next:
-            <span style={{ padding: "3px 10px", borderRadius: 999, background: "rgba(255,255,255,0.16)" }}>{keyOf(nextFrac)}</span>
+            <span style={{ padding: "3px 10px", borderRadius: 999, background: "rgba(255,255,255,0.16)", display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <span
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: "50%",
+                  border: "2px solid rgba(255,255,255,0.8)",
+                  background: `conic-gradient(rgba(15,23,42,0.62) 0deg ${(nextFrac.num / nextFrac.den) * 360}deg, rgba(255,255,255,0.95) ${(nextFrac.num / nextFrac.den) * 360}deg 360deg)`,
+                  boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.2)",
+                }}
+              />
+              {keyOf(nextFrac)}
+            </span>
           </span>
         </div>
 
