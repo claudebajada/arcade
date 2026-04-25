@@ -92,6 +92,10 @@ export default function PieStack() {
   const audioCtxRef = useRef(null);
   const suppressCollisionRef = useRef(new Set());
   const seqRef = useRef(1);
+  const spawnXRef = useRef(CANVAS_W / 2);
+  const nextFracRef = useRef(toFraction([1, 4]));
+  const hammerModeRef = useRef(false);
+  const scoreRef = useRef(0);
 
   const [screen, setScreen] = useState("menu");
   const [matterReady, setMatterReady] = useState(false);
@@ -111,6 +115,22 @@ export default function PieStack() {
 
   const totalHammer = 3 + Math.floor(score / 50);
   const hammerLeft = Math.max(0, totalHammer - hammerUsed);
+
+  useEffect(() => {
+    spawnXRef.current = spawnX;
+  }, [spawnX]);
+
+  useEffect(() => {
+    nextFracRef.current = nextFrac;
+  }, [nextFrac]);
+
+  useEffect(() => {
+    hammerModeRef.current = hammerMode;
+  }, [hammerMode]);
+
+  useEffect(() => {
+    scoreRef.current = score;
+  }, [score]);
 
   const backBtn = (
     <div
@@ -437,7 +457,7 @@ export default function PieStack() {
 
       const hasOut = bodiesRef.current.some((b) => b.pie && b.pie.aboveMs > 2000);
       if (hasOut) {
-        const finalScore = score;
+        const finalScore = scoreRef.current;
         setBest((prev) => {
           const bestNow = Math.max(prev, finalScore);
           localStorage.setItem("pieStack:best", String(bestNow));
@@ -485,11 +505,14 @@ export default function PieStack() {
       ctx.font = "bold 18px Nunito, sans-serif";
       ctx.fillText("Drop line", 18, DROP_LINE_Y - 10);
 
-      const nextKey = keyOf(nextFrac);
+      const liveNextFrac = nextFracRef.current;
+      const liveSpawnX = spawnXRef.current;
+      const liveHammerMode = hammerModeRef.current;
+      const nextKey = keyOf(liveNextFrac);
       const hintTargets = new Map();
       bodiesRef.current.forEach((body) => {
         if (!body?.pie) return;
-        const sum = addFracs(body.pie.frac, nextFrac);
+        const sum = addFracs(body.pie.frac, liveNextFrac);
         if (sum.num <= sum.den && ALLOWED_SET.has(keyOf(sum))) {
           hintTargets.set(body.pie.id, sum.num === sum.den ? "whole" : "merge");
         }
@@ -506,7 +529,7 @@ export default function PieStack() {
           ctx.shadowBlur = 24;
           ctx.shadowColor = hint === "whole" ? "rgba(250,204,21,0.9)" : "rgba(74,222,128,0.9)";
         }
-        if (hammerMode && HAMMER_SPLIT[key]) {
+        if (liveHammerMode && HAMMER_SPLIT[key]) {
           ctx.shadowBlur = 26;
           ctx.shadowColor = `rgba(251,113,133,${0.55 + (Math.sin(t / 130) * 0.2)})`;
         }
@@ -542,8 +565,8 @@ export default function PieStack() {
       });
       wholePieFxRef.current = wholePieFxRef.current.filter((fx) => fx.life > 0);
 
-      if (!hammerMode) {
-        const p = nextFrac;
+      if (!liveHammerMode) {
+        const p = liveNextFrac;
         const ghostRadius = radiusFor(p);
         const mk = keyOf(p);
         const projectedY = CANVAS_H - 108;
@@ -551,23 +574,23 @@ export default function PieStack() {
         ctx.strokeStyle = "rgba(255,255,255,0.45)";
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(spawnX, DROP_LINE_Y - 28 + bob);
-        ctx.lineTo(spawnX, projectedY);
+        ctx.moveTo(liveSpawnX, DROP_LINE_Y - 28 + bob);
+        ctx.lineTo(liveSpawnX, projectedY);
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.fillStyle = "rgba(15,23,42,0.22)";
         ctx.beginPath();
-        ctx.ellipse(spawnX, projectedY + 10, ghostRadius * 0.9, ghostRadius * 0.3, 0, 0, Math.PI * 2);
+        ctx.ellipse(liveSpawnX, projectedY + 10, ghostRadius * 0.9, ghostRadius * 0.3, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 0.5;
         ctx.save();
-        ctx.translate(spawnX, DROP_LINE_Y - 32 + bob);
+        ctx.translate(liveSpawnX, DROP_LINE_Y - 32 + bob);
         drawPieToken(ctx, p, ghostRadius, mk, { textureAlpha: 0.12 });
         ctx.restore();
         ctx.globalAlpha = 1;
       }
 
-      if (hammerMode) {
+      if (liveHammerMode) {
         ctx.fillStyle = "rgba(251,113,133,0.16)";
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
         ctx.fillStyle = "rgba(15,23,42,0.72)";
@@ -585,7 +608,7 @@ export default function PieStack() {
     };
 
     rafRef.current = requestAnimationFrame(loop);
-  }, [addFracs, attemptMerge, drawPieToken, hammerMode, nextFrac, radiusFor, score, spawnX]);
+  }, [addFracs, attemptMerge, drawPieToken, radiusFor]);
 
   const startGame = useCallback(() => {
     setScore(0);
@@ -595,8 +618,10 @@ export default function PieStack() {
     setLastEquation("");
     setNewBadges({ fractions: {}, equations: {} });
     setSpawnX(CANVAS_W / 2);
+    spawnXRef.current = CANVAS_W / 2;
     const n = pickNextFraction(0);
     setNextFrac(n);
+    nextFracRef.current = n;
     setMessage("Combine fractions to make whole pies!");
     setScreen("playing");
     setTimeout(() => resetWorld(), 0);
