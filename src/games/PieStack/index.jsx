@@ -88,6 +88,7 @@ export default function PieStack() {
   const worldRef = useRef(null);
   const bodiesRef = useRef([]);
   const particlesRef = useRef([]);
+  const wholePieFxRef = useRef([]);
   const audioCtxRef = useRef(null);
   const suppressCollisionRef = useRef(new Set());
   const seqRef = useRef(1);
@@ -103,6 +104,10 @@ export default function PieStack() {
   const [hammerUsed, setHammerUsed] = useState(0);
   const [bookOpen, setBookOpen] = useState(false);
   const [book, setBook] = useState(createBookState());
+  const [newBadges, setNewBadges] = useState({ fractions: {}, equations: {} });
+  const [wholePies, setWholePies] = useState(0);
+  const [scorePulse, setScorePulse] = useState(false);
+  const [lastEquation, setLastEquation] = useState("");
 
   const totalHammer = 3 + Math.floor(score / 50);
   const hammerLeft = Math.max(0, totalHammer - hammerUsed);
@@ -194,16 +199,28 @@ export default function PieStack() {
 
   const markDiscovery = useCallback((frac, equation) => {
     const k = keyOf(frac);
+    let freshFraction = false;
+    let freshEquation = false;
     setBook((prev) => {
       const next = {
         fractions: { ...prev.fractions },
         equations: { ...prev.equations },
       };
+      if (!next.fractions[k]) freshFraction = true;
       next.fractions[k] = true;
-      if (equation) next.equations[equation] = true;
+      if (equation) {
+        if (!next.equations[equation]) freshEquation = true;
+        next.equations[equation] = true;
+      }
       localStorage.setItem("pieStack:book", JSON.stringify(next));
       return next;
     });
+    if (freshFraction || freshEquation) {
+      setNewBadges((prev) => ({
+        fractions: freshFraction ? { ...prev.fractions, [k]: true } : prev.fractions,
+        equations: freshEquation && equation ? { ...prev.equations, [equation]: true } : prev.equations,
+      }));
+    }
   }, []);
 
   const createPiece = useCallback((x, y, frac, opts = {}) => {
@@ -248,6 +265,65 @@ export default function PieStack() {
     }
   }, []);
 
+  const drawPieToken = useCallback((ctx, frac, radius, key, options = {}) => {
+    const meta = FRACTION_META[key] || { color: "#f8fafc", ring: "#334155" };
+    const textureAlpha = options.textureAlpha ?? 0.18;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.fillStyle = meta.color;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(0, 0, radius - 2, 0, Math.PI * 2);
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = "#9a6324";
+    ctx.stroke();
+
+    ctx.beginPath();
+    const inner = radius * 0.68;
+    ctx.arc(0, 0, inner, 0, Math.PI * 2);
+    const cream = ctx.createRadialGradient(-inner * 0.25, -inner * 0.3, 2, 0, 0, inner);
+    cream.addColorStop(0, "rgba(255,255,255,0.85)");
+    cream.addColorStop(1, "rgba(255,255,255,0.2)");
+    ctx.fillStyle = cream;
+    ctx.fill();
+
+    const lines = Math.max(4, frac.den);
+    ctx.strokeStyle = "rgba(15,23,42,0.16)";
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < lines; i += 1) {
+      const ang = (Math.PI * 2 * i) / lines;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(ang) * (radius - 9), Math.sin(ang) * (radius - 9));
+      ctx.stroke();
+    }
+
+    for (let i = 0; i < 8; i += 1) {
+      const ang = (Math.PI * 2 * i) / 8 + (frac.num * 0.1);
+      const dist = radius * (0.35 + (i % 3) * 0.12);
+      ctx.beginPath();
+      ctx.arc(Math.cos(ang) * dist, Math.sin(ang) * dist, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(120,53,15,${textureAlpha})`;
+      ctx.fill();
+    }
+
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.max(16, radius * 0.28), 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(15,23,42,0.82)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.45)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = "#fff";
+    ctx.font = `700 ${Math.max(13, Math.floor(radius * 0.35))}px Nunito, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`${frac.num}/${frac.den}`, 0, 1);
+    ctx.restore();
+  }, []);
+
   const attemptMerge = useCallback((bodyA, bodyB) => {
     if (!bodyA?.pie || !bodyB?.pie) return;
     const idA = bodyA.pie.id;
@@ -266,11 +342,20 @@ export default function PieStack() {
       const y = (bodyA.position.y + bodyB.position.y) / 2;
       removePiece(bodyA);
       removePiece(bodyB);
+      wholePieFxRef.current.push({
+        x,
+        y,
+        life: 28,
+        maxLife: 28,
+        points: 12,
+      });
       burst(x, y, "#fde047");
       playTone("pop");
       markDiscovery(sum, eqText);
+      setWholePies((v) => v + 1);
       setScore((s) => s + 12);
-      setMessage("Perfect whole pie! 🍰 Pop!");
+      setLastEquation(eqText);
+      setMessage("WHOLE PIE! 🍰 +12");
       return;
     }
 
@@ -289,6 +374,7 @@ export default function PieStack() {
       playTone("merge");
       markDiscovery(sum, eqText);
       setScore((s) => s + 5 + sum.num);
+      setLastEquation(eqText);
       setMessage(`${eqText} ✅`);
     }
   }, [addFracs, burst, createPiece, markDiscovery, playTone, removePiece]);
@@ -312,6 +398,7 @@ export default function PieStack() {
     worldRef.current = engine.world;
     bodiesRef.current = [];
     particlesRef.current = [];
+    wholePieFxRef.current = [];
     suppressCollisionRef.current.clear();
 
     const wallOpts = { isStatic: true, restitution: 0.1, render: { visible: false } };
@@ -361,14 +448,29 @@ export default function PieStack() {
         return;
       }
 
+      const bob = Math.sin(t / 180) * 4;
       ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
       ctx.fillStyle = "#1d4ed8";
       ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
       const grd = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
-      grd.addColorStop(0, "#0ea5e9");
-      grd.addColorStop(1, "#1d4ed8");
+      grd.addColorStop(0, "#7dd3fc");
+      grd.addColorStop(0.45, "#38bdf8");
+      grd.addColorStop(1, "#0ea5e9");
       ctx.fillStyle = grd;
       ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      for (let i = 0; i < 36; i += 1) {
+        const px = ((i * 97) + Math.sin((t + i * 22) / 900) * 24) % CANVAS_W;
+        const py = ((i * 61) + (t * 0.03)) % CANVAS_H;
+        ctx.fillStyle = "rgba(255,255,255,0.11)";
+        ctx.fillRect(px, py, 2, 2);
+      }
+
+      ctx.fillStyle = "#d6b085";
+      ctx.fillRect(0, CANVAS_H - 96, CANVAS_W, 96);
+      ctx.fillStyle = "rgba(120,53,15,0.25)";
+      for (let i = 0; i < 12; i += 1) {
+        ctx.fillRect(i * 44, CANVAS_H - 90 + (i % 2) * 6, 30, 2);
+      }
 
       ctx.setLineDash([10, 8]);
       ctx.strokeStyle = "rgba(255,255,255,0.65)";
@@ -383,25 +485,32 @@ export default function PieStack() {
       ctx.font = "bold 18px Nunito, sans-serif";
       ctx.fillText("Drop line", 18, DROP_LINE_Y - 10);
 
+      const nextKey = keyOf(nextFrac);
+      const hintTargets = new Map();
+      bodiesRef.current.forEach((body) => {
+        if (!body?.pie) return;
+        const sum = addFracs(body.pie.frac, nextFrac);
+        if (sum.num <= sum.den && ALLOWED_SET.has(keyOf(sum))) {
+          hintTargets.set(body.pie.id, sum.num === sum.den ? "whole" : "merge");
+        }
+      });
+
       bodiesRef.current.forEach((body) => {
         if (!body.pie) return;
         const { key, frac, radius } = body.pie;
-        const meta = FRACTION_META[key] || { color: "#f8fafc", ring: "#334155" };
         ctx.save();
         ctx.translate(body.position.x, body.position.y);
         ctx.rotate(body.angle);
-        ctx.beginPath();
-        ctx.fillStyle = meta.color;
-        ctx.arc(0, 0, radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = meta.ring;
-        ctx.stroke();
-        ctx.fillStyle = "#0f172a";
-        ctx.font = "700 18px Nunito, sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(`${frac.num}/${frac.den}`, 0, 1);
+        const hint = hintTargets.get(body.pie.id);
+        if (hint) {
+          ctx.shadowBlur = 24;
+          ctx.shadowColor = hint === "whole" ? "rgba(250,204,21,0.9)" : "rgba(74,222,128,0.9)";
+        }
+        if (hammerMode && HAMMER_SPLIT[key]) {
+          ctx.shadowBlur = 26;
+          ctx.shadowColor = `rgba(251,113,133,${0.55 + (Math.sin(t / 130) * 0.2)})`;
+        }
+        drawPieToken(ctx, frac, radius, key);
         ctx.restore();
       });
 
@@ -416,33 +525,75 @@ export default function PieStack() {
         ctx.globalAlpha = 1;
       });
       particlesRef.current = particlesRef.current.filter((pt) => pt.life > 0);
+      wholePieFxRef.current.forEach((fx) => {
+        fx.life -= 1;
+        const progress = 1 - (fx.life / fx.maxLife);
+        const scale = 0.75 + (Math.sin(progress * Math.PI) * 0.38);
+        ctx.save();
+        ctx.translate(fx.x, fx.y);
+        ctx.scale(scale, 1.08 - progress * 0.2);
+        drawPieToken(ctx, { num: 1, den: 1 }, 52, "3/4", { textureAlpha: 0.24 });
+        ctx.restore();
+
+        ctx.fillStyle = `rgba(255,255,255,${Math.max(0, fx.life / fx.maxLife)})`;
+        ctx.font = "900 24px Nunito, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(`WHOLE PIE! +${fx.points}`, fx.x, fx.y - 68 - progress * 18);
+      });
+      wholePieFxRef.current = wholePieFxRef.current.filter((fx) => fx.life > 0);
 
       if (!hammerMode) {
         const p = nextFrac;
         const ghostRadius = radiusFor(p);
         const mk = keyOf(p);
-        const meta = FRACTION_META[mk] || { color: "#fff", ring: "#334155" };
-        ctx.globalAlpha = 0.5;
+        const projectedY = CANVAS_H - 108;
+        ctx.setLineDash([4, 7]);
+        ctx.strokeStyle = "rgba(255,255,255,0.45)";
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.fillStyle = meta.color;
-        ctx.arc(spawnX, DROP_LINE_Y - 32, ghostRadius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = meta.ring;
+        ctx.moveTo(spawnX, DROP_LINE_Y - 28 + bob);
+        ctx.lineTo(spawnX, projectedY);
         ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "rgba(15,23,42,0.22)";
+        ctx.beginPath();
+        ctx.ellipse(spawnX, projectedY + 10, ghostRadius * 0.9, ghostRadius * 0.3, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 0.5;
+        ctx.save();
+        ctx.translate(spawnX, DROP_LINE_Y - 32 + bob);
+        drawPieToken(ctx, p, ghostRadius, mk, { textureAlpha: 0.12 });
+        ctx.restore();
         ctx.globalAlpha = 1;
+      }
+
+      if (hammerMode) {
+        ctx.fillStyle = "rgba(251,113,133,0.16)";
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        ctx.fillStyle = "rgba(15,23,42,0.72)";
+        ctx.fillRect(16, 16, CANVAS_W - 32, 46);
+        ctx.fillStyle = "#fff";
+        ctx.font = "700 16px Nunito, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("Tap a slice to split it", 28, 44);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#fee2e2";
+        ctx.fillText(`${nextKey} preview`, CANVAS_W - 26, 44);
       }
 
       rafRef.current = requestAnimationFrame(loop);
     };
 
     rafRef.current = requestAnimationFrame(loop);
-  }, [attemptMerge, hammerMode, nextFrac, radiusFor, score, spawnX]);
+  }, [addFracs, attemptMerge, drawPieToken, hammerMode, nextFrac, radiusFor, score, spawnX]);
 
   const startGame = useCallback(() => {
     setScore(0);
     setHammerUsed(0);
+    setWholePies(0);
     setHammerMode(false);
+    setLastEquation("");
+    setNewBadges({ fractions: {}, equations: {} });
     setSpawnX(CANVAS_W / 2);
     const n = pickNextFraction(0);
     setNextFrac(n);
@@ -615,6 +766,17 @@ export default function PieStack() {
 
   const discoveredFractions = Object.keys(book.fractions).length;
   const discoveredEquations = Object.keys(book.equations).length;
+  const favoriteMerge = useMemo(() => {
+    const entries = Object.keys(book.equations || {});
+    return entries.length ? entries[entries.length - 1] : "No favourite yet";
+  }, [book.equations]);
+
+  useEffect(() => {
+    if (screen !== "playing") return;
+    setScorePulse(true);
+    const t = setTimeout(() => setScorePulse(false), 180);
+    return () => clearTimeout(t);
+  }, [score, screen]);
 
   if (screen === "menu") {
     return (
@@ -650,7 +812,9 @@ export default function PieStack() {
           <h2 style={{ margin: "0 0 8px", color: "#1e293b", fontSize: 34 }}>📦 Out of Room!</h2>
           <p style={{ margin: "0 0 8px", color: "#334155", fontSize: 17 }}>{message}</p>
           <p style={{ margin: "0 0 14px", color: "#0f172a", fontSize: 22, fontWeight: 800 }}>Score: {score}</p>
-          <p style={{ margin: "0 0 18px", color: "#475569" }}>Best: {Math.max(best, score)} · Fractions found: {discoveredFractions} · Equations logged: {discoveredEquations}</p>
+          <p style={{ margin: "0 0 8px", color: "#475569" }}>Best score: {Math.max(best, score)} · Whole pies made: {wholePies}</p>
+          <p style={{ margin: "0 0 8px", color: "#475569" }}>Fractions discovered: {discoveredFractions} · Equations logged: {discoveredEquations}</p>
+          <p style={{ margin: "0 0 18px", color: "#334155", fontSize: 14 }}>Favourite merge: {lastEquation || favoriteMerge}</p>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
             <button onClick={startGame} style={{ minHeight: 50, padding: "0 24px", borderRadius: 12, border: "none", background: "#16a34a", color: "#fff", fontWeight: 800, cursor: "pointer" }}>🔁 Play Again</button>
             <button onClick={() => setScreen("menu")} style={{ minHeight: 50, padding: "0 24px", borderRadius: 12, border: "none", background: "#334155", color: "#fff", fontWeight: 800, cursor: "pointer" }}>🏠 Menu</button>
@@ -664,16 +828,19 @@ export default function PieStack() {
     <div style={{ width: "100vw", minHeight: "100vh", background: "#082f49", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", fontFamily: "Nunito, system-ui", padding: "54px 10px 16px" }}>
       {backBtn}
 
-      <div style={{ width: "100%", maxWidth: 560, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap", color: "#e0f2fe", marginBottom: 8, padding: "0 8px" }}>
-        <div style={{ fontSize: 18, fontWeight: 800 }}>Score: {score}</div>
-        <div style={{ fontSize: 14 }}>Unlocked: {unlockCount}/{FRACTIONS.length}</div>
-        <div style={{ fontSize: 14 }}>Hammer: {hammerLeft}</div>
+      <div style={{ width: "100%", maxWidth: 560, display: "grid", gridTemplateColumns: "repeat(3,minmax(110px,1fr))", alignItems: "center", gap: 8, color: "#e0f2fe", marginBottom: 8, padding: "0 8px" }}>
+        <div style={{ borderRadius: 999, background: "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 800, transform: scorePulse ? "scale(1.04)" : "scale(1)", transition: "transform 120ms ease" }}>⭐ Score: {score}</div>
+        <div style={{ borderRadius: 999, background: "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700 }}>🔓 Unlocked: {unlockCount}/{FRACTIONS.length}</div>
+        <div style={{ borderRadius: 999, background: "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700 }}>🔨 Hammers: {hammerLeft}</div>
       </div>
 
       <div style={{ position: "relative", width: "100%", maxWidth: 560, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-        <div style={{ width: "100%", maxWidth: 500, display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", borderRadius: 12, color: "#e2e8f0", padding: "8px 10px", fontSize: 14 }}>
+        <div style={{ width: "100%", maxWidth: 500, display: "flex", justifyContent: "space-between", alignItems: "center", background: hammerMode ? "rgba(127,29,29,0.68)" : "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", borderRadius: 12, color: "#e2e8f0", padding: "8px 10px", fontSize: 14 }}>
           <span>{message}</span>
-          <span style={{ fontWeight: 700 }}>Next: {keyOf(nextFrac)}</span>
+          <span style={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
+            Next:
+            <span style={{ padding: "3px 10px", borderRadius: 999, background: "rgba(255,255,255,0.16)" }}>{keyOf(nextFrac)}</span>
+          </span>
         </div>
 
         <canvas
@@ -717,14 +884,20 @@ export default function PieStack() {
             <div style={{ marginBottom: 12, color: "#1e3a8a", fontWeight: 700 }}>🔨 Hammer tip: Tap Hammer, then tap a 1/2, 1/4, 1/3, or 3/8 slice to split it.</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
               {Array.from(ALLOWED_SET).map((f) => (
-                <div key={f} style={{ padding: "6px 10px", borderRadius: 20, background: book.fractions[f] ? "#86efac" : "#cbd5e1", color: "#0f172a", fontWeight: 700 }}>{f}</div>
+                <div key={f} style={{ position: "relative", minWidth: 64, padding: "10px 8px", borderRadius: 16, textAlign: "center", background: book.fractions[f] ? "#bbf7d0" : "#cbd5e1", color: "#0f172a", fontWeight: 800 }}>
+                  🥧 {book.fractions[f] ? f : "??"}
+                  {newBadges.fractions[f] && <span style={{ position: "absolute", top: -8, right: -6, background: "#f97316", color: "#fff", borderRadius: 999, fontSize: 10, padding: "2px 6px" }}>new!</span>}
+                </div>
               ))}
             </div>
             <div style={{ color: "#1e293b", fontWeight: 700, marginBottom: 6 }}>Equations</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {Object.keys(book.equations).length === 0 && <div style={{ color: "#64748b" }}>No equations yet. Start stacking!</div>}
               {Object.keys(book.equations).sort().map((eq) => (
-                <div key={eq} style={{ background: "#dbeafe", borderRadius: 8, padding: "6px 8px", color: "#1e3a8a", fontWeight: 600 }}>{eq}</div>
+                <div key={eq} style={{ position: "relative", background: "#dbeafe", borderRadius: 8, padding: "6px 8px", color: "#1e3a8a", fontWeight: 600 }}>
+                  {eq}
+                  {newBadges.equations[eq] && <span style={{ marginLeft: 8, fontSize: 11, color: "#be123c", fontWeight: 800 }}>NEW!</span>}
+                </div>
               ))}
             </div>
           </div>
