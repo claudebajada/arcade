@@ -288,6 +288,9 @@ export default function PieStack() {
   const drawPieToken = useCallback((ctx, frac, radius, key, options = {}) => {
     const meta = FRACTION_META[key] || { color: "#f8fafc", ring: "#334155" };
     const textureAlpha = options.textureAlpha ?? 0.18;
+    const totalSlices = Math.max(1, frac.den);
+    const shadedSlices = Math.max(0, Math.min(frac.num, totalSlices));
+    const startAngle = -Math.PI / 2;
     ctx.save();
     ctx.beginPath();
     ctx.arc(0, 0, radius, 0, Math.PI * 2);
@@ -309,11 +312,24 @@ export default function PieStack() {
     ctx.fillStyle = cream;
     ctx.fill();
 
-    const lines = Math.max(4, frac.den);
+    if (shadedSlices > 0) {
+      for (let i = 0; i < shadedSlices; i += 1) {
+        const wedgeStart = startAngle + ((Math.PI * 2 * i) / totalSlices);
+        const wedgeEnd = startAngle + ((Math.PI * 2 * (i + 1)) / totalSlices);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, inner - 1, wedgeStart, wedgeEnd);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(15,23,42,0.17)";
+        ctx.fill();
+      }
+    }
+
+    const lines = Math.max(4, totalSlices);
     ctx.strokeStyle = "rgba(15,23,42,0.16)";
     ctx.lineWidth = 1.5;
     for (let i = 0; i < lines; i += 1) {
-      const ang = (Math.PI * 2 * i) / lines;
+      const ang = startAngle + ((Math.PI * 2 * i) / lines);
       ctx.beginPath();
       ctx.moveTo(0, 0);
       ctx.lineTo(Math.cos(ang) * (radius - 9), Math.sin(ang) * (radius - 9));
@@ -503,6 +519,8 @@ export default function PieStack() {
 
       ctx.fillStyle = "rgba(255,255,255,0.85)";
       ctx.font = "bold 18px Nunito, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
       ctx.fillText("Drop line", 18, DROP_LINE_Y - 10);
 
       const liveNextFrac = nextFracRef.current;
