@@ -19,8 +19,8 @@ const GAME_SEO_CONTENT = {
     name: 'Number Nomad',
     tagline: 'Free Math Platformer Game',
     about: 'Number Nomad is an educational platformer drawn entirely on graph paper. You play as a small figure jumping through hand-crafted worlds where every platform, enemy, and collectible is tied to a maths equation. Solve equations to progress, collect the right number pieces, and reach the exit portal.',
-    howToPlay: 'Run and jump through each level, collecting number tokens that complete the displayed equation. Dodge eraser enemies that roam the platforms and use wall-slides to reach higher areas. Each world introduces a new maths concept — collect all the correct tokens before touching the wrong ones.',
-    controls: 'Arrow Keys / WASD — Move and jump | Up Arrow / W — Jump (hold for higher jump) | Down Arrow / S — Crouch | Wall-slide: hold toward wall while falling | Mobile: on-screen joystick and jump button',
+    howToPlay: 'Run and jump through each level to collect number tokens that complete the equation. Use wall-slide and wall-jump to climb tricky gaps, and time your dash because it has a short cooldown. Grab the correct pieces, avoid eraser enemies, and don’t touch the wrong tokens.',
+    controls: 'Arrow Keys / A D — Move | Up / W / Space — Jump (double-jump) | Shift — Dash | Mobile: joystick + jump/dash buttons',
     whatYoullLearn: 'Number Nomad reinforces core maths fluency including addition, subtraction, and early multiplication. Players develop mental arithmetic speed by completing equations under movement pressure, making number bonds feel natural and intuitive.',
   },
   '/embassy-of-oddballs': {
