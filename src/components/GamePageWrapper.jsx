@@ -12,7 +12,13 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Underwater Arcade Game',
     about: 'Fish for Fruit is a surreal underwater arcade game where you switch between being a fish and a piece of fruit. Navigate a bizarre ocean full of hungry divers and falling produce, collecting power-ups and racking up points as you master the art of aquatic transformation.',
     howToPlay: 'Start each round as either a fish or a fruit and use your transformation ability to survive. Avoid divers who want to catch you as a fish, and eat falling fruit when you\'re in fish form. Each level introduces new hazards and faster-falling items. Reach the target score before time runs out to advance.',
-    controls: 'Arrow Keys / WASD — Move | Space — Transform between fish and fruit | Mobile: left joystick + transform button',
+    controls: {
+      desktop: [
+        'Arrow Keys / WASD — Move',
+        'Space — Transform between fish and fruit',
+      ],
+      mobile: ['Left joystick + transform button'],
+    },
     whatYoullLearn: 'Fish for Fruit builds quick decision-making and hand-eye coordination. Players practise pattern recognition as they learn which form survives each situation, and develop reaction speed as the game pace increases across levels.',
   },
   '/number-nomad': {
@@ -20,7 +26,14 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Math Platformer Game',
     about: 'Number Nomad is an educational platformer drawn entirely on graph paper. You play as a small figure jumping through hand-crafted worlds where every platform, enemy, and collectible is tied to a maths equation. Solve equations to progress, collect the right number pieces, and reach the exit portal.',
     howToPlay: 'Run and jump through each level to collect number tokens that complete the equation. Use wall-slide and wall-jump to climb tricky gaps, and time your dash because it has a short cooldown. Grab the correct pieces, avoid eraser enemies, and don’t touch the wrong tokens.',
-    controls: 'Arrow Keys / A D — Move | Up / W / Space — Jump (double-jump) | Shift — Dash | Mobile: joystick + jump/dash buttons',
+    controls: {
+      desktop: [
+        'Arrow Keys / A D — Move',
+        'Up / W / Space — Jump (double-jump)',
+        'Shift — Dash',
+      ],
+      mobile: ['Joystick + jump/dash buttons'],
+    },
     whatYoullLearn: 'Number Nomad reinforces core maths fluency including addition, subtraction, and early multiplication. Players develop mental arithmetic speed by completing equations under movement pressure, making number bonds feel natural and intuitive.',
   },
   '/embassy-of-oddballs': {
@@ -28,7 +41,14 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Geography Strategy Game',
     about: 'Embassy of Oddballs is a geography strategy game featuring all 193 UN member states. Each round presents a ridiculous diplomatic crisis — a lost flamingo, a disputed noodle recipe, a rogue weather balloon — and you must match it to the correct country to resolve the situation. Learn the world\'s nations through pure absurdity.',
     howToPlay: 'Read the crisis brief and the list of candidate countries, then click the flag or name of the country you believe is responsible. Correct matches earn diplomatic points and unlock further crises. Incorrect guesses deduct points and advance the crisis timer. Solve as many crises as possible before the session ends.',
-    controls: 'Mouse / Tap — Select a country to resolve the crisis | Keyboard 1–4 — Quick-select numbered options | Escape — Pause and review country facts',
+    controls: {
+      desktop: [
+        'Mouse — Select a country to resolve the crisis',
+        'Keyboard 1–4 — Quick-select numbered options',
+        'Escape — Pause and review country facts',
+      ],
+      mobile: ['Tap — Select a country to resolve the crisis'],
+    },
     whatYoullLearn: 'Players build genuine geographical knowledge — capitals, regions, flags, and cultural facts — through repeated exposure in a low-stakes, humour-driven context. Embassy of Oddballs is particularly effective for expanding world geography awareness across all continents.',
   },
   '/gravity-lab': {
@@ -36,7 +56,15 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Space Physics Puzzle Game',
     about: 'Gravity Lab is a physics puzzle game set in outer space. Your goal is simple: guide a comet to its target by placing planets on the screen. Each planet you place warps the fabric of space around it, bending the comet\'s trajectory through gravitational attraction. Eight increasingly tricky puzzles await.',
     howToPlay: 'Drag planets from your inventory onto the play field to create gravitational wells. Watch the comet\'s projected path update in real time as you position each planet. Once you\'re happy with your arrangement, launch the comet and see if it reaches the target star. Fewer planets used means a higher score.',
-    controls: 'Mouse / Touch — Drag planets onto the play field | Click planet — Rotate or remove a placed planet | Space Bar / Launch button — Fire the comet | R — Reset the current puzzle',
+    controls: {
+      desktop: [
+        'Mouse — Drag planets onto the play field',
+        'Click planet — Rotate or remove a placed planet',
+        'Space Bar / Launch button — Fire the comet',
+        'R — Reset the current puzzle',
+      ],
+      mobile: ['Touch — Drag planets onto the play field'],
+    },
     whatYoullLearn: 'Gravity Lab introduces the concept of gravitational attraction in an interactive way. Players develop spatial reasoning and basic physics intuition, understanding how mass influences the paths of moving objects — a foundation for Newtonian mechanics.',
   },
   '/debug-dynasty': {
@@ -44,7 +72,11 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Arcade Coding Game',
     about: 'Debug Dynasty is a fast-paced arcade game that puts you in the shoes of a programmer fighting rogue glitches. Bugs and errors invade your codebase in waves, and only your quick eyes and clicking fingers stand between order and total system chaos. Squash enough bugs to earn the title of Debug Dynasty ruler.',
     howToPlay: 'Bugs appear across the screen in varying speeds and patterns. Click or tap a bug before it reaches the core system to squash it. Different bug types require different numbers of hits. Combos and multipliers reward accurate, rapid bug-squashing. Survive all waves to complete the level.',
-    controls: 'Mouse Click / Tap — Squash a bug | Keyboard shortcut keys flash briefly on special bugs for bonus points | Mobile: full touch support with haptic feedback on supported devices',
+    controls: {
+      desktop: ['Mouse Click — Squash a bug'],
+      mobile: ['Tap — Squash a bug', 'Full touch support with haptic feedback on supported devices'],
+      keyboardShortcuts: ['Shortcut keys flash briefly on special bugs for bonus points'],
+    },
     whatYoullLearn: 'Debug Dynasty introduces programming vocabulary in a fun context — players encounter terms like syntax error, null pointer, and infinite loop as named enemy types. The game builds familiarity with the idea that code needs testing and debugging, and rewards careful attention to detail.',
   },
   '/math-practice-room': {
@@ -52,7 +84,18 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Kids Maths Practice',
     about: 'Math Practice Room is a cosy, low-pressure classroom where kids can build genuine maths fluency. Choose your name, pick a category, and answer questions at your own pace. The game tracks your streaks and personal bests, encouraging steady improvement without stress or time pressure on early settings.',
     howToPlay: 'Select a student name from the roster (or create one) and choose a maths category: Doubles, Friends of 10, or Bridging. A question appears on the board and you type or select your answer. Correct answers build your streak and unlock harder questions. Review your session stats at the end.',
-    controls: 'Number Keys / On-screen Number Pad — Enter your answer | Enter / Return — Submit answer | Backspace — Correct a digit | Mouse / Touch — Select multiple-choice options in beginner mode',
+    controls: {
+      desktop: [
+        'Number Keys — Enter your answer',
+        'Enter / Return — Submit answer',
+        'Backspace — Correct a digit',
+        'Mouse — Select multiple-choice options in beginner mode',
+      ],
+      mobile: [
+        'On-screen Number Pad — Enter your answer',
+        'Touch — Select multiple-choice options in beginner mode',
+      ],
+    },
     whatYoullLearn: 'Math Practice Room targets key early numeracy strategies: doubling and halving, number bonds to 10, and the bridging-through-10 technique for mental addition and subtraction. Regular short sessions build the automatic recall that underpins confident mental arithmetic.',
   },
   '/relativistic-racer_arcade': {
@@ -60,7 +103,15 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Space Racing Science Game',
     about: "Relativistic Racer is a science arcade game where the speed of light has been slowed to 100 mph. Race your spaceship to rescue your stranded sister, dodging asteroids on the way. The twist: as you approach the speed of light, time dilation kicks in — your onboard clock slows while the universe ages around you. Einstein's special relativity, made playable.",
     howToPlay: 'Steer your ship through asteroid fields, collecting speed boosts to push closer to light speed. Watch your velocity gauge and the twin clocks — one for ship time, one for outside time — diverge as you accelerate. Reach the rescue point before your fuel runs out, balancing speed against collision risk.',
-    controls: 'Arrow Keys / WASD — Steer the ship | Space Bar — Boost (uses fuel) | Shift — Brake | Mouse / Gamepad supported | Mobile: tilt-to-steer or on-screen controls',
+    controls: {
+      desktop: [
+        'Arrow Keys / WASD — Steer the ship',
+        'Space Bar — Boost (uses fuel)',
+        'Shift — Brake',
+        'Mouse / Gamepad supported',
+      ],
+      mobile: ['Tilt-to-steer or on-screen controls'],
+    },
     whatYoullLearn: 'Relativistic Racer makes special relativity tangible. Players directly observe time dilation and length contraction as gameplay mechanics, building intuition for why fast-moving objects experience time differently — concepts from Einstein\'s 1905 paper, no equations required.',
   },
   '/enigma': {
@@ -68,7 +119,15 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Cipher & Code Machine Game',
     about: 'Enigma is an interactive replica of the famous WWII Enigma cipher machine. Set your rotor positions, wire up the plugboard, and watch each keystroke travel through the machine\'s electrical path in real time. Encode top-secret messages or decode intercepted ciphertext — just like the codebreakers of Bletchley Park.',
     howToPlay: 'Choose a mode: Encode a message of your own, or Decode one of three historical-style challenges. Configure the three rotors and optional plugboard pairs, then type your message letter by letter to see it encrypted. In decode mode, use the provided starting settings and type the ciphertext to reveal the hidden message.',
-    controls: 'Keyboard — Type letters to encrypt them | Mouse / Tap — Click the on-screen keyboard | Rotor controls — Click rotor labels to step positions | Plugboard — Type letter pairs into the input field',
+    controls: {
+      desktop: [
+        'Keyboard — Type letters to encrypt them',
+        'Mouse — Click the on-screen keyboard',
+        'Rotor controls — Click rotor labels to step positions',
+        'Plugboard — Type letter pairs into the input field',
+      ],
+      mobile: ['Tap — Click the on-screen keyboard'],
+    },
     whatYoullLearn: 'Enigma teaches the fundamentals of substitution ciphers, symmetric encryption, and the history of WWII cryptography. Players gain intuition for why cipher complexity matters and how the same machine settings are needed to both encrypt and decrypt — a core concept in cryptography and computer security.',
   },
   '/note-quest': {
@@ -76,7 +135,15 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Music Theory Game for Kids',
     about: 'Note Quest is a music theory quiz adventure packed with ear training, note reading, chord building, rhythm, and instrument knowledge. Choose your learning path — Notes, Chords, Rhythm, Scales, Ear Training, or Guitar & Ukulele — and level up through beginner to advanced questions. Collect stars, badges, and unlock new themes as you go.',
     howToPlay: 'Pick a mode (Learn, Quiz, or timed Challenge), choose a learning stream, then select a level. Answer multiple-choice questions to earn up to three stars per level. Correct answers build your streak and score; hints are available in Learn mode. Finish a level to see your results and unlock rewards.',
-    controls: 'Mouse / Tap — Select an answer | Keyboard 1–4 — Quick-select options | H — Show hint (Learn mode) | P — Replay audio question | Enter — Continue after answering',
+    controls: {
+      desktop: ['Mouse — Select an answer', 'Keyboard 1–4 — Quick-select options'],
+      mobile: ['Tap — Select an answer'],
+      keyboardShortcuts: [
+        'H — Show hint (Learn mode)',
+        'P — Replay audio question',
+        'Enter — Continue after answering',
+      ],
+    },
     whatYoullLearn: 'Note Quest builds well-rounded music literacy: note names on the treble clef, interval recognition, chord construction, key signatures, time signatures, mode names, and basic guitar and ukulele chord shapes. Regular play develops the musical ear alongside theoretical understanding.',
   },
   '/times-table-blaster': {
@@ -84,7 +151,13 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Multiplication Arcade Game',
     about: 'Times Table Blaster is an arcade game that turns multiplication practice into fast-paced fun. Choose which times tables you want to drill — anything from 2s to 12s — then pilot a cannon at the bottom of the screen, shooting the correct answer out of a stream of falling bubbles before they hit the ground. Speed increases with every level, keeping players on their toes.',
     howToPlay: 'A multiplication question appears at the top of the screen. Four answer bubbles slowly fall from above — only one is correct. Move your cannon left and right and fire at the right bubble before it hits the ground. Shooting the wrong bubble or letting the correct one fall costs a life. Answer five questions to level up; the bubbles fall faster each level.',
-    controls: 'Arrow Keys ← → — Move cannon left and right | Space Bar / ↑ Arrow — Fire | Mobile: on-screen ◀ ▶ buttons to move, FIRE button to shoot',
+    controls: {
+      desktop: [
+        'Arrow Keys ← → — Move cannon left and right',
+        'Space Bar / ↑ Arrow — Fire',
+      ],
+      mobile: ['On-screen ◀ ▶ buttons to move, FIRE button to shoot'],
+    },
     whatYoullLearn: 'Times Table Blaster builds fast recall of multiplication facts from 2 to 12. Players choose which tables to practise, making it easy to focus on tricky ones like 7s or 8s. The time pressure of falling bubbles rewards instant recall over slow counting, building the automatic fluency needed for mental maths, long multiplication, and fractions.',
   },
   '/pie-stack': {
@@ -92,7 +165,14 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Fraction Stacking Puzzle Game',
     about: 'Pie Stack is a bright, bouncy puzzle game where pie slices drop from above and you stack matching fractions to build whole pies. Line up the right pieces, merge them, and clear complete pies for big combo points. It is quick to learn, cheerful to play, and made for curious kids.',
     howToPlay: 'Watch each falling slice and slide it into the best column before it lands. Match equivalent or compatible fractions to merge slices into larger pieces, then complete a full 1 whole pie to clear that stack. Keep your board tidy and chain clears to stay in the game longer.',
-    controls: 'Arrow Keys / A D — Move slice left and right | Down Arrow / S — Drop faster | Space — Quick place | Mobile: tap left/right lanes and drop button',
+    controls: {
+      desktop: [
+        'Arrow Keys / A D — Move slice left and right',
+        'Down Arrow / S — Drop faster',
+        'Space — Quick place',
+      ],
+      mobile: ['Tap left/right lanes and drop button'],
+    },
     whatYoullLearn: 'Pie Stack helps kids see how fractions combine into a whole through repeated play. Players practise equivalence, addition of fractions, and flexible number sense while making smart stacking choices under gentle pressure.',
   },
   '/ukulele-quest': {
@@ -100,7 +180,15 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Classroom Ukulele Learning Game',
     about: "Ukulele Quest is a classroom fretboard teaching game designed for shared tablets. A big, friendly ukulele neck fills the screen and kids take turns finding notes and building chord shapes. Three play modes suit different classroom styles — Pass & Play for individual turns, The Council for team discussion, and GamesMaster for teacher-led sessions with real ukuleles in students' hands.",
     howToPlay: 'Pick a mode, a level (Note Hunter or Chord Builder), and a scoring style (team or leaderboard). On each round the screen shows a target note or chord name. Tap the fretboard to place a finger — one tap to find a note, or multiple taps to form a chord — then submit. Correct answers earn points and a confetti burst; wrong answers reveal the right shape so the whole class learns.',
-    controls: 'Tap / Mouse — Place a finger on the fretboard | Submit / Clear buttons — Confirm or reset your chord | Flip — Rotate the screen for the opposite side of the table | Menu — Return to setup',
+    controls: {
+      desktop: [
+        'Mouse — Place a finger on the fretboard',
+        'Submit / Clear buttons — Confirm or reset your chord',
+        'Flip — Rotate the screen for the opposite side of the table',
+        'Menu — Return to setup',
+      ],
+      mobile: ['Tap — Place a finger on the fretboard'],
+    },
     whatYoullLearn: 'Ukulele Quest builds real fretboard fluency: open-string notes (G C E A), how frets map to pitch, and the finger shapes for common chords like C, Am, F, and G7. The turn-taking modes also develop musical vocabulary and collaborative learning habits that transfer to group lessons.',
   },
 };
@@ -143,6 +231,28 @@ const STYLES = {
     lineHeight: 1.75,
     color: '#c0b0e0',
     maxWidth: 680,
+  },
+  controlsGroup: {
+    marginBottom: 14,
+  },
+  controlsLabel: {
+    fontSize: 14,
+    fontWeight: 900,
+    color: '#d4c8f0',
+    marginBottom: 6,
+    letterSpacing: 0.5,
+  },
+  controlsList: {
+    margin: 0,
+    marginLeft: 20,
+    padding: 0,
+    display: 'grid',
+    gap: 6,
+  },
+  controlsItem: {
+    fontSize: 'clamp(14px, 2vw, 16px)',
+    lineHeight: 1.7,
+    color: '#c0b0e0',
   },
   divider: {
     height: 1,
@@ -297,6 +407,43 @@ const FOOTER_LINKS = [
   { label: 'Contact', href: 'mailto:hello@oddnoodlegames.com' },
 ];
 
+function normalizeControls(controls) {
+  if (!controls) {
+    return [];
+  }
+
+  if (typeof controls === 'string') {
+    const entries = controls.split('|').map(part => part.trim()).filter(Boolean);
+    const grouped = {
+      desktop: [],
+      mobile: [],
+      keyboardShortcuts: [],
+    };
+
+    entries.forEach((entry) => {
+      if (/^mobile\s*:/i.test(entry)) {
+        grouped.mobile.push(entry.replace(/^mobile\s*:\s*/i, '').trim());
+      } else if (/^keyboard/i.test(entry) || /shortcut/i.test(entry)) {
+        grouped.keyboardShortcuts.push(entry.replace(/^keyboard\s*/i, '').trim());
+      } else {
+        grouped.desktop.push(entry);
+      }
+    });
+
+    return [
+      { key: 'desktop', label: 'Desktop', items: grouped.desktop },
+      { key: 'mobile', label: 'Mobile', items: grouped.mobile },
+      { key: 'keyboardShortcuts', label: 'Keyboard Shortcuts', items: grouped.keyboardShortcuts },
+    ].filter(group => group.items.length > 0);
+  }
+
+  return [
+    { key: 'desktop', label: 'Desktop', items: controls.desktop || [] },
+    { key: 'mobile', label: 'Mobile', items: controls.mobile || [] },
+    { key: 'keyboardShortcuts', label: 'Keyboard Shortcuts', items: controls.keyboardShortcuts || [] },
+  ].filter(group => Array.isArray(group.items) && group.items.length > 0);
+}
+
 /*
   GamePageWrapper
   ───────────────
@@ -311,6 +458,7 @@ const FOOTER_LINKS = [
 */
 export default function GamePageWrapper({ path, children }) {
   const content = GAME_SEO_CONTENT[path];
+  const controlGroups = normalizeControls(content?.controls);
 
   // Pick up to 3 related games (excluding the current game)
   const relatedGames = GAMES.filter(g => g.path !== path).slice(0, 3);
@@ -338,9 +486,18 @@ export default function GamePageWrapper({ path, children }) {
 
             {/* Controls */}
             <h3 style={STYLES.h3}>Controls</h3>
-            <p style={{ ...STYLES.p, fontFamily: "'Courier New', monospace", fontSize: 14 }}>
-              {content.controls}
-            </p>
+            <div style={STYLES.p}>
+              {controlGroups.map(group => (
+                <div key={group.key} style={STYLES.controlsGroup}>
+                  <div style={STYLES.controlsLabel}>{group.label}</div>
+                  <ul style={STYLES.controlsList}>
+                    {group.items.map(item => (
+                      <li key={item} style={STYLES.controlsItem}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
 
             {/* What You'll Learn */}
             <h3 style={STYLES.h3}>What You'll Learn</h3>
