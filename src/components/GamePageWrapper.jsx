@@ -12,7 +12,7 @@ const GAME_SEO_CONTENT = {
     tagline: 'Free Underwater Arcade Game',
     about: 'Fish for Fruit is a surreal underwater arcade game where you switch between being a fish and a piece of fruit. Navigate a bizarre ocean full of hungry divers and falling produce, collecting power-ups and racking up points as you master the art of aquatic transformation.',
     howToPlay: 'Start each round as either a fish or a fruit and use your transformation ability to survive. Avoid divers who want to catch you as a fish, and eat falling fruit when you\'re in fish form. Each level introduces new hazards and faster-falling items. Reach the target score before time runs out to advance.',
-    controls: 'Arrow Keys / WASD — Move | Space Bar — Transform between fish and fruit | Z — Activate power-up | Mobile: on-screen directional pad and action buttons',
+    controls: 'Arrow Keys / WASD — Move | Space — Transform between fish and fruit | Mobile: left joystick + transform button',
     whatYoullLearn: 'Fish for Fruit builds quick decision-making and hand-eye coordination. Players practise pattern recognition as they learn which form survives each situation, and develop reaction speed as the game pace increases across levels.',
   },
   '/number-nomad': {
