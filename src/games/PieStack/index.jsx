@@ -75,6 +75,10 @@ function createBookState() {
   return { fractions: {}, equations: {} };
 }
 
+function pairKeyFor(idA, idB) {
+  return idA < idB ? `${idA}:${idB}` : `${idB}:${idA}`;
+}
+
 export default function PieStack() {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
@@ -248,7 +252,7 @@ export default function PieStack() {
     if (!bodyA?.pie || !bodyB?.pie) return;
     const idA = bodyA.pie.id;
     const idB = bodyB.pie.id;
-    const pairKey = idA < idB ? `${idA}:${idB}` : `${idB}:${idA}`;
+    const pairKey = pairKeyFor(idA, idB);
     if (suppressCollisionRef.current.has(pairKey)) return;
     suppressCollisionRef.current.add(pairKey);
     setTimeout(() => suppressCollisionRef.current.delete(pairKey), 120);
@@ -465,29 +469,47 @@ export default function PieStack() {
 
     const map = HAMMER_SPLIT[target.pie.key];
     if (!map) {
-      setMessage("This slice cannot be split.");
+      setMessage("This slice cannot be split. Try 1/2, 1/4, 1/3, or 3/8.");
       return true;
     }
 
+    const createdBodies = [];
+    const splitFracs = map.map((f) => toFraction(f));
+    const splitKeys = splitFracs.map((f) => keyOf(f));
+    const eqText = `${target.pie.key} → ${splitKeys.join(" + ")}`;
+    const radiusA = radiusFor(splitFracs[0]);
+    const radiusB = radiusFor(splitFracs[1]);
+    const gap = 12;
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    const centerOffset = ((radiusA + radiusB) / 2) + gap;
+
     removePiece(target);
-    map.forEach((f, idx) => {
-      const frac = toFraction(f);
-      const body = createPiece(target.position.x + (idx === 0 ? -18 : 18), target.position.y - 8, frac);
+    splitFracs.forEach((frac, idx) => {
+      const sign = idx === 0 ? -1 : 1;
+      const spawnXPos = target.position.x + (sign * dir * centerOffset);
+      const spawnYPos = target.position.y - 10;
+      const body = createPiece(spawnXPos, spawnYPos, frac);
       if (body && matterRef.current) {
+        createdBodies.push(body);
         matterRef.current.Body.setVelocity(body, {
-          x: (idx === 0 ? -1.6 : 1.6) + Math.random() * 0.6,
-          y: -1.2,
+          x: sign * dir * (3.2 + Math.random() * 0.8),
+          y: -2.1 - Math.random() * 0.5,
         });
       }
-      markDiscovery(frac, `${target.pie.key} → ${keyOf(frac)} + ${keyOf(frac)}`);
     });
+    if (createdBodies.length === 2) {
+      const siblingKey = pairKeyFor(createdBodies[0].pie.id, createdBodies[1].pie.id);
+      suppressCollisionRef.current.add(siblingKey);
+      setTimeout(() => suppressCollisionRef.current.delete(siblingKey), 900);
+    }
+    markDiscovery(target.pie.frac, eqText);
     playTone("hammer");
     burst(target.position.x, target.position.y, "#fca5a5");
     setHammerUsed((h) => h + 1);
     setHammerMode(false);
     setMessage("Hammer smash! Split into tiny slices! 🔨");
     return true;
-  }, [burst, createPiece, hammerLeft, hammerMode, markDiscovery, playTone, removePiece, screen]);
+  }, [burst, createPiece, hammerLeft, hammerMode, markDiscovery, playTone, radiusFor, removePiece, screen]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -602,7 +624,10 @@ export default function PieStack() {
           <h1 style={{ margin: "0 0 8px", color: "#1e293b", fontSize: 42 }}>🥧 PieStack</h1>
           <p style={{ margin: "0 0 14px", color: "#0f172a", fontSize: 18 }}>Drop fraction slices, merge them, and pop whole pies!</p>
           <p style={{ margin: "0 0 16px", color: "#334155", fontSize: 15 }}>Learn equivalent fractions by building to exactly <strong>1</strong>.</p>
-          <div style={{ margin: "0 auto 16px", background: "#dbeafe", borderRadius: 14, padding: 12, color: "#1e3a8a", fontWeight: 700 }}>Best Score: {best} · Matter ready: {matterReady ? "Yes ✅" : "Loading…"}</div>
+          <div style={{ margin: "0 auto 8px", background: "#dbeafe", borderRadius: 14, padding: 12, color: "#1e3a8a", fontWeight: 700 }}>Best Score: {best}</div>
+          {!matterReady && (
+            <div style={{ margin: "0 auto 14px", color: "#334155", fontSize: 14, fontWeight: 700 }}>Loading Physics…</div>
+          )}
           <button
             onClick={startGame}
             disabled={!matterReady}
@@ -611,6 +636,7 @@ export default function PieStack() {
             {matterReady ? "▶ Start Stacking" : "Loading Physics…"}
           </button>
           <div style={{ marginTop: 12, fontSize: 14, color: "#334155" }}>Move: mouse/touch or ← → · Drop: click, tap, Space, or button · Hammer: H then tap</div>
+          <div style={{ marginTop: 8, fontSize: 13, color: "#475569" }}>🔨 Hammer splits certain slices into smaller ones: 1/2, 1/4, 1/3, and 3/8.</div>
         </div>
       </div>
     );
@@ -688,6 +714,7 @@ export default function PieStack() {
               <button onClick={() => setBookOpen(false)} style={{ border: "none", background: "#1e3a8a", color: "#fff", borderRadius: 8, minHeight: 40, padding: "0 12px", cursor: "pointer" }}>Close</button>
             </div>
             <div style={{ marginBottom: 12, color: "#334155" }}>Fractions found: {discoveredFractions} · Equations discovered: {discoveredEquations}</div>
+            <div style={{ marginBottom: 12, color: "#1e3a8a", fontWeight: 700 }}>🔨 Hammer tip: Tap Hammer, then tap a 1/2, 1/4, 1/3, or 3/8 slice to split it.</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
               {Array.from(ALLOWED_SET).map((f) => (
                 <div key={f} style={{ padding: "6px 10px", borderRadius: 20, background: book.fractions[f] ? "#86efac" : "#cbd5e1", color: "#0f172a", fontWeight: 700 }}>{f}</div>
