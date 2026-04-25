@@ -87,6 +87,14 @@ const GAME_SEO_CONTENT = {
     controls: 'Arrow Keys ← → — Move cannon left and right | Space Bar / ↑ Arrow — Fire | Mobile: on-screen ◀ ▶ buttons to move, FIRE button to shoot',
     whatYoullLearn: 'Times Table Blaster builds fast recall of multiplication facts from 2 to 12. Players choose which tables to practise, making it easy to focus on tricky ones like 7s or 8s. The time pressure of falling bubbles rewards instant recall over slow counting, building the automatic fluency needed for mental maths, long multiplication, and fractions.',
   },
+  '/pie-stack': {
+    name: 'Pie Stack',
+    tagline: 'Free Fraction Stacking Puzzle Game',
+    about: 'Pie Stack is a bright, bouncy puzzle game where pie slices drop from above and you stack matching fractions to build whole pies. Line up the right pieces, merge them, and clear complete pies for big combo points. It is quick to learn, cheerful to play, and made for curious kids.',
+    howToPlay: 'Watch each falling slice and slide it into the best column before it lands. Match equivalent or compatible fractions to merge slices into larger pieces, then complete a full 1 whole pie to clear that stack. Keep your board tidy and chain clears to stay in the game longer.',
+    controls: 'Arrow Keys / A D — Move slice left and right | Down Arrow / S — Drop faster | Space — Quick place | Mobile: tap left/right lanes and drop button',
+    whatYoullLearn: 'Pie Stack helps kids see how fractions combine into a whole through repeated play. Players practise equivalence, addition of fractions, and flexible number sense while making smart stacking choices under gentle pressure.',
+  },
   '/ukulele-quest': {
     name: 'Ukulele Quest',
     tagline: 'Free Classroom Ukulele Learning Game',
