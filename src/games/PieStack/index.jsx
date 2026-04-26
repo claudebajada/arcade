@@ -34,13 +34,6 @@ const FRACTION_META = {
   "7/8": { color: "#fecaca", ring: "#ef4444" },
 };
 
-const HAMMER_SPLIT = {
-  "1/2": [[1, 4], [1, 4]],
-  "1/4": [[1, 8], [1, 8]],
-  "1/3": [[1, 6], [1, 6]],
-  "3/8": [[1, 8], [1, 4]],
-};
-
 function gcd(a, b) {
   let x = Math.abs(a);
   let y = Math.abs(b);
@@ -85,6 +78,41 @@ function canMergeToPracticeTarget(sum) {
   return PRACTICE_SET_KEYS.has(keyOf(sum));
 }
 
+function getHammerSplit(frac, options = {}) {
+  const {
+    unlockedKeys = PRACTICE_SET_KEYS,
+    allowExtended = false,
+    extendedKeys = PRACTICE_SET_KEYS,
+  } = options;
+
+  const allowedKeys = allowExtended ? extendedKeys : unlockedKeys;
+  const allowedFractions = Array.from(allowedKeys)
+    .map((k) => {
+      const [numText, denText] = k.split("/");
+      return reduceFrac(Number(numText), Number(denText));
+    })
+    .filter((f) => Number.isFinite(f.num) && Number.isFinite(f.den) && f.den > 0)
+    .sort((a, b) => ((a.num / a.den) - (b.num / b.den)) || (a.den - b.den) || (a.num - b.num));
+
+  const equalHalf = reduceFrac(frac.num, frac.den * 2);
+  if (allowedKeys.has(keyOf(equalHalf))) {
+    return [equalHalf, equalHalf];
+  }
+
+  for (let i = 0; i < allowedFractions.length; i += 1) {
+    for (let j = i; j < allowedFractions.length; j += 1) {
+      const left = allowedFractions[i];
+      const right = allowedFractions[j];
+      const sum = addFracs(left, right);
+      if (sum.num === frac.num && sum.den === frac.den) {
+        return [left, right];
+      }
+    }
+  }
+
+  return null;
+}
+
 export default function PieStack() {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
@@ -102,6 +130,7 @@ export default function PieStack() {
   const spawnXRef = useRef(CANVAS_W / 2);
   const nextFracRef = useRef(toFraction([1, 4]));
   const hammerModeRef = useRef(false);
+  const hammerHoverKeyRef = useRef(null);
   const scoreRef = useRef(0);
   const invalidMergeMessageRef = useRef({ text: "", at: 0 });
 
@@ -155,6 +184,9 @@ export default function PieStack() {
 
   useEffect(() => {
     hammerModeRef.current = hammerMode;
+    if (!hammerMode) {
+      hammerHoverKeyRef.current = null;
+    }
   }, [hammerMode]);
 
   useEffect(() => {
@@ -220,6 +252,19 @@ export default function PieStack() {
     if (score >= 12) return 5;
     return 4;
   }, [score]);
+
+  const unlockedFractionList = useMemo(
+    () => PRACTICE_FRACTIONS.slice(0, unlockCount).map((frac) => toFraction(frac)),
+    [unlockCount],
+  );
+  const unlockedFractionKeys = useMemo(
+    () => new Set(unlockedFractionList.map((frac) => keyOf(frac))),
+    [unlockedFractionList],
+  );
+  const allPracticeKeys = useMemo(
+    () => new Set(PRACTICE_FRACTIONS.map((frac) => keyOf(toFraction(frac)))),
+    [],
+  );
 
   const pickNextFraction = useCallback((currentScore) => {
     const unlocked = PRACTICE_FRACTIONS.slice(0, Math.min(PRACTICE_FRACTIONS.length, (() => {
@@ -580,7 +625,6 @@ export default function PieStack() {
       const liveNextFrac = nextFracRef.current;
       const liveSpawnX = spawnXRef.current;
       const liveHammerMode = hammerModeRef.current;
-      const nextKey = keyOf(liveNextFrac);
       const hintTargets = new Map();
       bodiesRef.current.forEach((body) => {
         if (!body?.pie) return;
@@ -601,7 +645,7 @@ export default function PieStack() {
           ctx.shadowBlur = 24;
           ctx.shadowColor = hint === "whole" ? "rgba(250,204,21,0.9)" : "rgba(74,222,128,0.9)";
         }
-        if (liveHammerMode && HAMMER_SPLIT[key]) {
+        if (liveHammerMode && getHammerSplit(frac, { unlockedKeys: unlockedFractionKeys, extendedKeys: allPracticeKeys })) {
           ctx.shadowBlur = 26;
           ctx.shadowColor = `rgba(251,113,133,${0.55 + (Math.sin(t / 130) * 0.2)})`;
         }
@@ -674,8 +718,15 @@ export default function PieStack() {
       }
 
       if (liveHammerMode) {
-        const previewKey = HAMMER_SPLIT[nextKey] ? nextKey : "1/2";
-        const splitPreview = `${previewKey} → ${HAMMER_SPLIT[previewKey].map((f) => `${f[0]}/${f[1]}`).join(" + ")}`;
+        const hoveredKey = hammerHoverKeyRef.current;
+        const hoveredFrac = hoveredKey
+          ? toFraction(hoveredKey.split("/").map((part) => Number(part)))
+          : null;
+        const previewFrac = hoveredFrac || liveNextFrac;
+        const split = getHammerSplit(previewFrac, { unlockedKeys: unlockedFractionKeys, extendedKeys: allPracticeKeys });
+        const splitPreview = split
+          ? `${keyOf(previewFrac)} → ${split.map((f) => keyOf(f)).join(" + ")}`
+          : `${keyOf(previewFrac)} can't split yet`;
         ctx.fillStyle = "rgba(251,113,133,0.16)";
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
         ctx.fillStyle = "rgba(15,23,42,0.72)";
@@ -693,7 +744,7 @@ export default function PieStack() {
     };
 
     rafRef.current = requestAnimationFrame(loop);
-  }, [addFracs, attemptMerge, drawPieToken, radiusFor, safeSetBestScore]);
+  }, [addFracs, allPracticeKeys, attemptMerge, drawPieToken, radiusFor, safeSetBestScore, unlockedFractionKeys]);
 
   const startGame = useCallback(() => {
     setScore(0);
@@ -728,14 +779,17 @@ export default function PieStack() {
     }
     if (!target) return false;
 
-    const map = HAMMER_SPLIT[target.pie.key];
-    if (!map) {
-      setMessage("This slice cannot be split. Try 1/2, 1/4, 1/3, or 3/8.");
+    const splitFracs = getHammerSplit(target.pie.frac, {
+      unlockedKeys: unlockedFractionKeys,
+      extendedKeys: allPracticeKeys,
+    });
+    if (!splitFracs) {
+      setMessage("That slice can't split with today's unlocked practice fractions yet.");
       return true;
     }
 
+    const existingBodies = bodiesRef.current.filter((b) => b?.pie && b !== target);
     const createdBodies = [];
-    const splitFracs = map.map((f) => toFraction(f));
     const splitKeys = splitFracs.map((f) => keyOf(f));
     const eqText = `${target.pie.key} → ${splitKeys.join(" + ")}`;
     const radiusA = radiusFor(splitFracs[0]);
@@ -763,6 +817,13 @@ export default function PieStack() {
       suppressCollisionRef.current.add(siblingKey);
       setTimeout(() => suppressCollisionRef.current.delete(siblingKey), 900);
     }
+    createdBodies.forEach((newBody) => {
+      existingBodies.forEach((oldBody) => {
+        const pair = pairKeyFor(newBody.pie.id, oldBody.pie.id);
+        suppressCollisionRef.current.add(pair);
+        setTimeout(() => suppressCollisionRef.current.delete(pair), 320);
+      });
+    });
     markDiscovery(target.pie.frac, eqText);
     playTone("hammer");
     burst(target.position.x, target.position.y, "#fca5a5");
@@ -770,7 +831,7 @@ export default function PieStack() {
     setHammerMode(false);
     setMessage("Hammer smash! Split into tiny slices! 🔨");
     return true;
-  }, [burst, createPiece, hammerLeft, hammerMode, markDiscovery, playTone, radiusFor, removePiece, screen]);
+  }, [allPracticeKeys, burst, createPiece, hammerLeft, hammerMode, markDiscovery, playTone, radiusFor, removePiece, screen, unlockedFractionKeys]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -855,8 +916,29 @@ export default function PieStack() {
   const handleCanvasPointer = (e) => {
     if (screen !== "playing") return;
     const touch = e.touches?.[0];
-    const x = pointerToCanvas(touch ? touch.clientX : e.clientX);
+    const clientX = touch ? touch.clientX : e.clientX;
+    const clientY = touch ? touch.clientY : e.clientY;
+    const x = pointerToCanvas(clientX);
     setSpawnX(x);
+    if (!hammerMode) {
+      hammerHoverKeyRef.current = null;
+      return;
+    }
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const y = ((clientY - rect.top) / rect.height) * CANVAS_H;
+    let hovered = null;
+    for (let i = bodiesRef.current.length - 1; i >= 0; i -= 1) {
+      const body = bodiesRef.current[i];
+      if (!body?.pie) continue;
+      const dx = x - body.position.x;
+      const dy = y - body.position.y;
+      if ((dx * dx + dy * dy) <= body.pie.radius * body.pie.radius) {
+        hovered = body.pie.key;
+        break;
+      }
+    }
+    hammerHoverKeyRef.current = hovered;
   };
 
   const handleCanvasTap = (e) => {
@@ -909,7 +991,7 @@ export default function PieStack() {
           </button>
           <div style={{ marginTop: 12, fontSize: 14, color: "#334155" }}>Move: mouse/touch or ← → · Drop: click, tap, Space, or button · Hammer: H then tap</div>
           <div style={{ marginTop: 8, fontSize: 13, color: "#1e3a8a", fontWeight: 700 }}>Practice set mode: only selected targets (through eighths/sixths) merge in this level.</div>
-          <div style={{ marginTop: 8, fontSize: 13, color: "#475569" }}>🔨 Hammer splits certain slices into smaller ones: 1/2, 1/4, 1/3, and 3/8.</div>
+          <div style={{ marginTop: 8, fontSize: 13, color: "#475569" }}>🔨 Hammer uses smart splits: it tries equal halves first, then valid unlocked practice-piece combos.</div>
         </div>
       </div>
     );
@@ -1008,7 +1090,7 @@ export default function PieStack() {
             </div>
             <div style={{ marginBottom: 8, color: "#334155" }}>Fractions found: {discoveredFractions} · Equations discovered: {discoveredEquations}</div>
             <div style={{ marginBottom: 12, color: "#1e3a8a", fontWeight: 700 }}>This level practices selected fractions up to denominator 8/6.</div>
-            <div style={{ marginBottom: 12, color: "#1e3a8a", fontWeight: 700 }}>🔨 Hammer tip: Tap Hammer, then tap a 1/2, 1/4, 1/3, or 3/8 slice to split it.</div>
+            <div style={{ marginBottom: 12, color: "#1e3a8a", fontWeight: 700 }}>🔨 Hammer tip: Tap Hammer, then tap a slice. It prefers equal halves, then tries unlocked practice-piece combinations.</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
               {Array.from(PRACTICE_SET_KEYS).map((f) => (
                 <div key={f} style={{ position: "relative", minWidth: 64, padding: "10px 8px", borderRadius: 16, textAlign: "center", background: book.fractions[f] ? "#bbf7d0" : "#cbd5e1", color: "#0f172a", fontWeight: 800 }}>
