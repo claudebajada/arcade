@@ -6,7 +6,7 @@ const CANVAS_H = 720;
 const DROP_LINE_Y = 112;
 const SCRIPT_ID = "matter-js-cdn";
 
-const FRACTIONS = [
+const PRACTICE_FRACTIONS = [
   [1, 8],
   [1, 6],
   [1, 4],
@@ -69,7 +69,7 @@ function toFraction(value) {
   return reduceFrac(value[0], value[1]);
 }
 
-const ALLOWED_SET = new Set(FRACTIONS.map((f) => keyOf(toFraction(f))));
+const PRACTICE_SET_KEYS = new Set(PRACTICE_FRACTIONS.map((f) => keyOf(toFraction(f))));
 
 function createBookState() {
   return { fractions: {}, equations: {} };
@@ -79,10 +79,10 @@ function pairKeyFor(idA, idB) {
   return idA < idB ? `${idA}:${idB}` : `${idB}:${idA}`;
 }
 
-function canMergeTo(sum) {
+function canMergeToPracticeTarget(sum) {
   if (sum.num > sum.den) return false;
   if (sum.num === sum.den) return true;
-  return ALLOWED_SET.has(keyOf(sum));
+  return PRACTICE_SET_KEYS.has(keyOf(sum));
 }
 
 export default function PieStack() {
@@ -103,6 +103,7 @@ export default function PieStack() {
   const nextFracRef = useRef(toFraction([1, 4]));
   const hammerModeRef = useRef(false);
   const scoreRef = useRef(0);
+  const invalidMergeMessageRef = useRef({ text: "", at: 0 });
 
   const [screen, setScreen] = useState("menu");
   const [matterReady, setMatterReady] = useState(false);
@@ -211,7 +212,7 @@ export default function PieStack() {
   }, []);
 
   const unlockCount = useMemo(() => {
-    if (score >= 140) return FRACTIONS.length;
+    if (score >= 140) return PRACTICE_FRACTIONS.length;
     if (score >= 100) return 9;
     if (score >= 70) return 8;
     if (score >= 45) return 7;
@@ -221,8 +222,8 @@ export default function PieStack() {
   }, [score]);
 
   const pickNextFraction = useCallback((currentScore) => {
-    const unlocked = FRACTIONS.slice(0, Math.min(FRACTIONS.length, (() => {
-      if (currentScore >= 140) return FRACTIONS.length;
+    const unlocked = PRACTICE_FRACTIONS.slice(0, Math.min(PRACTICE_FRACTIONS.length, (() => {
+      if (currentScore >= 140) return PRACTICE_FRACTIONS.length;
       if (currentScore >= 100) return 9;
       if (currentScore >= 70) return 8;
       if (currentScore >= 45) return 7;
@@ -426,7 +427,7 @@ export default function PieStack() {
       return;
     }
 
-    if (sum.num < sum.den && ALLOWED_SET.has(sumKey)) {
+    if (sum.num < sum.den && PRACTICE_SET_KEYS.has(sumKey)) {
       const Matter = matterRef.current;
       if (!Matter) return;
       const x = (bodyA.position.x + bodyB.position.x) / 2;
@@ -451,6 +452,19 @@ export default function PieStack() {
       setScore((s) => s + points);
       setLastEquation(eqText);
       setMessage(`${eqText} ✅`);
+      return;
+    }
+
+    if (sum.num < sum.den) {
+      const now = performance.now();
+      const feedback = `Great math! ${sumKey} is outside today's practice set, so those slices stay separate.`;
+      if (
+        invalidMergeMessageRef.current.text !== feedback
+        || (now - invalidMergeMessageRef.current.at) > 1000
+      ) {
+        invalidMergeMessageRef.current = { text: feedback, at: now };
+        setMessage(feedback);
+      }
     }
   }, [addFracs, burst, createPiece, markDiscovery, playTone, removePiece]);
 
@@ -571,7 +585,7 @@ export default function PieStack() {
       bodiesRef.current.forEach((body) => {
         if (!body?.pie) return;
         const sum = addFracs(body.pie.frac, liveNextFrac);
-        if (canMergeTo(sum)) {
+        if (canMergeToPracticeTarget(sum)) {
           hintTargets.set(body.pie.id, sum.num === sum.den ? "whole" : "merge");
         }
       });
@@ -880,7 +894,8 @@ export default function PieStack() {
         <div style={{ maxWidth: 440, width: "100%", background: "rgba(255,255,255,0.92)", borderRadius: 22, padding: "24px 24px 20px", boxShadow: "0 18px 50px rgba(15,23,42,0.35)", textAlign: "center" }}>
           <h1 style={{ margin: "0 0 8px", color: "#1e293b", fontSize: 42 }}>🥧 PieStack</h1>
           <p style={{ margin: "0 0 14px", color: "#0f172a", fontSize: 18 }}>Drop fraction slices, merge them, and pop whole pies!</p>
-          <p style={{ margin: "0 0 16px", color: "#334155", fontSize: 15 }}>Learn equivalent fractions by building to exactly <strong>1</strong>.</p>
+          <p style={{ margin: "0 0 10px", color: "#334155", fontSize: 15 }}>Learn equivalent fractions by building to exactly <strong>1</strong>.</p>
+          <p style={{ margin: "0 0 16px", color: "#1e3a8a", fontSize: 14, fontWeight: 700 }}>This level practices selected fractions up to denominator 8/6.</p>
           <div style={{ margin: "0 auto 8px", background: "#dbeafe", borderRadius: 14, padding: 12, color: "#1e3a8a", fontWeight: 700 }}>Best Score: {best}</div>
           {!matterReady && (
             <div style={{ margin: "0 auto 14px", color: "#334155", fontSize: 14, fontWeight: 700 }}>Loading Physics…</div>
@@ -893,6 +908,7 @@ export default function PieStack() {
             {matterReady ? "▶ Start Stacking" : "Loading Physics…"}
           </button>
           <div style={{ marginTop: 12, fontSize: 14, color: "#334155" }}>Move: mouse/touch or ← → · Drop: click, tap, Space, or button · Hammer: H then tap</div>
+          <div style={{ marginTop: 8, fontSize: 13, color: "#1e3a8a", fontWeight: 700 }}>Practice set mode: only selected targets (through eighths/sixths) merge in this level.</div>
           <div style={{ marginTop: 8, fontSize: 13, color: "#475569" }}>🔨 Hammer splits certain slices into smaller ones: 1/2, 1/4, 1/3, and 3/8.</div>
         </div>
       </div>
@@ -925,7 +941,7 @@ export default function PieStack() {
 
       <div style={{ width: "100%", maxWidth: 560, display: "grid", gridTemplateColumns: "repeat(3,minmax(110px,1fr))", alignItems: "center", gap: 8, color: "#e0f2fe", marginBottom: 8, padding: "0 8px" }}>
         <div style={{ borderRadius: 999, background: "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 800, transform: scorePulse ? "scale(1.04)" : "scale(1)", transition: "transform 120ms ease" }}>⭐ Score: {score}</div>
-        <div style={{ borderRadius: 999, background: "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700 }}>🔓 Unlocked: {unlockCount}/{FRACTIONS.length}</div>
+        <div style={{ borderRadius: 999, background: "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700 }}>🔓 Practice set: {unlockCount}/{PRACTICE_FRACTIONS.length}</div>
         <div style={{ borderRadius: 999, background: "rgba(15,23,42,0.55)", border: "1px solid rgba(255,255,255,0.22)", minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700 }}>🔨 Hammers: {hammerLeft}</div>
       </div>
 
@@ -948,6 +964,9 @@ export default function PieStack() {
               {keyOf(nextFrac)}
             </span>
           </span>
+        </div>
+        <div style={{ width: "100%", maxWidth: 500, background: "rgba(15,23,42,0.48)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "7px 10px", color: "#dbeafe", fontSize: 13 }}>
+          📚 Practice set rules: you can always make <strong>1 whole</strong>. Other merges must land on today's selected fractions (up to denominator 8/6).
         </div>
 
         <canvas
@@ -984,13 +1003,14 @@ export default function PieStack() {
         <div onClick={() => setBookOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(2,6,23,0.65)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 30, padding: 16 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 520, maxHeight: "80vh", overflowY: "auto", background: "#eff6ff", borderRadius: 16, padding: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <h3 style={{ margin: 0, color: "#1e3a8a", fontSize: 24 }}>📘 Fraction Discovery Book</h3>
+              <h3 style={{ margin: 0, color: "#1e3a8a", fontSize: 24 }}>📘 Fraction Practice Book</h3>
               <button onClick={() => setBookOpen(false)} style={{ border: "none", background: "#1e3a8a", color: "#fff", borderRadius: 8, minHeight: 40, padding: "0 12px", cursor: "pointer" }}>Close</button>
             </div>
-            <div style={{ marginBottom: 12, color: "#334155" }}>Fractions found: {discoveredFractions} · Equations discovered: {discoveredEquations}</div>
+            <div style={{ marginBottom: 8, color: "#334155" }}>Fractions found: {discoveredFractions} · Equations discovered: {discoveredEquations}</div>
+            <div style={{ marginBottom: 12, color: "#1e3a8a", fontWeight: 700 }}>This level practices selected fractions up to denominator 8/6.</div>
             <div style={{ marginBottom: 12, color: "#1e3a8a", fontWeight: 700 }}>🔨 Hammer tip: Tap Hammer, then tap a 1/2, 1/4, 1/3, or 3/8 slice to split it.</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-              {Array.from(ALLOWED_SET).map((f) => (
+              {Array.from(PRACTICE_SET_KEYS).map((f) => (
                 <div key={f} style={{ position: "relative", minWidth: 64, padding: "10px 8px", borderRadius: 16, textAlign: "center", background: book.fractions[f] ? "#bbf7d0" : "#cbd5e1", color: "#0f172a", fontWeight: 800 }}>
                   🥧 {book.fractions[f] ? f : "??"}
                   {newBadges.fractions[f] && <span style={{ position: "absolute", top: -8, right: -6, background: "#f97316", color: "#fff", borderRadius: 999, fontSize: 10, padding: "2px 6px" }}>new!</span>}
